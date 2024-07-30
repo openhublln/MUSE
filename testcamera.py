@@ -36,7 +36,9 @@ def capture_and_save_frames(save_path_rgba):
     start_time = time.time()
 
     # 运行时间限制（秒）
-    run_duration = 5 * 60  # 5分钟
+    run_duration = 500 * 60  # 5分钟
+
+    run_continuously = 1
 
     # 开始捕捉和保存帧
     try:
@@ -44,10 +46,14 @@ def capture_and_save_frames(save_path_rgba):
             # 检查运行时间是否超过限制
             current_time = time.time()
             elapsed_time = current_time - start_time
+            '''
             if elapsed_time > run_duration:
                 print("已达到运行时间限制，程序终止。")
                 break
-
+            '''
+            if run_continuously < 0:
+                break
+            
             # 从摄像头读取一帧
             ret, frame = cap.read()
             if not ret:

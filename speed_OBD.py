@@ -3,16 +3,8 @@ import time
 import csv
 from datetime import datetime
 
-# Config Bluetooth sur terminal Raspberry Pi: 
-# MAC du device OBD : 66:1E:32:30:33:38
-# sudo bluetoothctl
-# scan on
-# pair 66:1E:32:30:33:38
-# trust 66:1E:32:30:33:38
-# exit
-# sudo rfcomm bind /dev/rfcomm0 66:1E:32:30:33:38
-
-connection = obd.OBD('/dev/rfcomm0', fast=False) 
+# 
+connection = obd.OBD('/dev/rfcomm1', fast=False) 
 cmd = obd.commands.SPEED
 
 def read_speed(connection):

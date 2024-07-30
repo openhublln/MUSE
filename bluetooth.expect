@@ -1,0 +1,55 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+
+# 从命令行参数获取密码和蓝牙地址
+set password [lindex $argv 0]
+set bt_address [lindex $argv 1]
+
+
+# 保持 sudo 会话
+spawn sudo -v
+expect "password for"
+send "$password\r"
+expect eof
+
+# 启动 `bluetoothctl` 并使用 `spawn` 运行命令
+spawn sudo bluetoothctl
+
+# 处理密码提示
+expect "password for"
+send "$password\r"
+
+# 连接到指定的蓝牙设备
+expect "# "
+send "connect $bt_address\r"
+
+# 等待连接过程完成
+expect {
+    -re "Connection successful" {
+        send_user "Device $bt_address connected successfully\n"
+        exec echo "DeviceConnected" > ~/Desktop/Muse-main/log/bluetooth_status.txt
+    }
+    -re "Failed to connect" {
+        send_user "Failed to connect to $bt_address\n"
+        exec echo "DeviceNotConnected" > ~/Desktop/Muse-main/log/bluetooth_status.txt
+    }
+    timeout {
+        send_user "Connection attempt timed out\n"
+        exec echo "DeviceNotConnected" > ~/Desktop/Muse-main/log/bluetooth_status.txt
+    }
+}
+
+# 查看特定设备的信息
+expect "# "
+send "info $bt_address\r"
+
+
+
+# 退出 `bluetoothctl`
+expect "# "
+send "exit\r"
+
+# 结束 expect 脚本
+expect eof
+

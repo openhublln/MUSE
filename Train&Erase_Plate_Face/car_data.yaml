@@ -1,6 +1,0 @@
-train: C:\Users\Openhub\Desktop\train\images
-val: C:\Users\Openhub\Desktop\valid\images
-nc: 1
-names: [ 'license']
-
-
