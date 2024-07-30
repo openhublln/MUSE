@@ -1,9 +1,9 @@
-[2024-07-30 11:17:56.293] [console] [info] set master/slave sdk to master sdk by default  [parse_cfg_file.cpp] [Parse] [82]
-[2024-07-30 11:17:56.293] [console] [info] Livox lidar logger disable.  [parse_cfg_file.cpp] [Parse] [126]
-[2024-07-30 11:17:56.293] [console] [info] Device type:10 point cloud and IMU data multicast ip:224.1.1.5  [params_check.cpp] [CheckLidarMulticastIp] [114]
-[2024-07-30 11:17:56.293] [console] [info] Data Handler Init Succ.  [data_handler.cpp] [Init] [49]
+[2024-07-30 17:27:26.685] [console] [info] set master/slave sdk to master sdk by default  [parse_cfg_file.cpp] [Parse] [82]
+[2024-07-30 17:27:26.685] [console] [info] Livox lidar logger disable.  [parse_cfg_file.cpp] [Parse] [126]
+[2024-07-30 17:27:26.685] [console] [info] Device type:10 point cloud and IMU data multicast ip:224.1.1.5  [params_check.cpp] [CheckLidarMulticastIp] [114]
+[2024-07-30 17:27:26.685] [console] [info] Data Handler Init Succ.  [data_handler.cpp] [Init] [49]
 bind failed
-[2024-07-30 11:17:56.294] [console] [error] Create detection socket failed.  [device_manager.cpp] [CreateDetectionChannel] [275]
-[2024-07-30 11:17:56.294] [console] [error] Create detection channel failed.  [device_manager.cpp] [CreateChannel] [242]
-[2024-07-30 11:17:56.294] [console] [error] Create channel failed.  [device_manager.cpp] [Init] [169]
+[2024-07-30 17:27:26.686] [console] [error] Create detection socket failed.  [device_manager.cpp] [CreateDetectionChannel] [275]
+[2024-07-30 17:27:26.686] [console] [error] Create detection channel failed.  [device_manager.cpp] [CreateChannel] [242]
+[2024-07-30 17:27:26.686] [console] [error] Create channel failed.  [device_manager.cpp] [Init] [169]
 Livox Init Failed

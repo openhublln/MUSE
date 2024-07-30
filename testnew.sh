@@ -11,25 +11,25 @@ start_master_clock() {
     cd ~/Documents/linuxptp/configs
     echo $SUDO_PASSWORD | sudo -S ptp4l -i enp0s31f6 -S -ml 6 -f automotive-master.cfg &
     MASTER_CLOCK_PID=$!
-    echo $MASTER_CLOCK_PID > ~/Desktop/Muse-main/master_pid.txt
+    echo $MASTER_CLOCK_PID > ~/Desktop/Muse/master_pid.txt
     echo "Master clock started with PID $MASTER_CLOCK_PID"
 }
 
 # 接封包
 start_tcpdump() {
-    cd ~/Desktop/Muse-main/DATA
+    cd ~/Desktop/Muse/DATA
     echo $SUDO_PASSWORD | sudo -S tcpdump -i any port 57000 -w "capture_$(date +%Y%m%d_%H%M%S).pcap" &
     TCPDUMP_PID=$!
-    echo $TCPDUMP_PID > ~/Desktop/Muse-main/log/TCPDUMP_pid.txt
+    echo $TCPDUMP_PID > ~/Desktop/Muse/log/TCPDUMP_pid.txt
     echo "TCPDump started with PID $TCPDUMP_PID"
 }
 
 # bluetooth 
 start_bluetooth() {
-    cd ~/Desktop/Muse-main
+    cd ~/Desktop/Muse
     ./bluetooth.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > log/bluetooth_connect.log 2>&1 &
     BT_PID=$!  # 获取bluetooth.expect命令的PID
-    echo $BT_PID > ~/Desktop/Muse-main/log/bluetooth_pid.txt
+    echo $BT_PID > ~/Desktop/Muse/log/bluetooth_pid.txt
 
     wait $BT_PID 
 
@@ -44,7 +44,7 @@ start_bluetooth() {
     echo "BLUETOOTH started with PID $BT_PID"
     
   # 输出bluetooth_status.txt的内容
-    echo "BLUETOOTH status is $(cat ~/Desktop/Muse-main/log/bluetooth_status.txt)"
+    echo "BLUETOOTH status is $(cat ~/Desktop/Muse/log/bluetooth_status.txt)"
 }
 
 
@@ -54,41 +54,45 @@ start_bluetooth() {
 
 # 启动摄像头脚本
 start_camera() {
-    cd ~/Desktop/Muse-main/
+    cd ~/Desktop/Muse/
     python testcamera.py &
     CAMERA_PID=$!
-    echo $CAMERA_PID > ~/Desktop/Muse-main/camera_pid.txt
+    echo $CAMERA_PID > ~/Desktop/Muse/camera_pid.txt
     echo "Camera script started with PID $CAMERA_PID"
 }
 
 # 启动 Livox Quickstart
 start_livox() {
     cd ~/Documents/Livox-test/Livox-SDK2/build/samples/livox_lidar_quick_start || exit
-    ./livox_lidar_quick_start ../../../samples/livox_lidar_quick_start/hap_config.json > ~/Desktop/Muse-main/log/loglivox_output.log 2>&1 &
+    ./livox_lidar_quick_start ../../../samples/livox_lidar_quick_start/hap_config.json > ~/Desktop/Muse/log/loglivox_output.log 2>&1 &
     LIVOX_PID=$!
-    echo $LIVOX_PID > ~/Desktop/Muse-main/livox_pid.txt
+    echo $LIVOX_PID > ~/Desktop/Muse/livox_pid.txt
     echo "Livox Lidar started with PID $LIVOX_PID"
 }
 
 #OBD
 start_obd() {
 
-    cd ~/Desktop/Muse-main/
+    cd ~/Desktop/Muse/
     python speed_OBD.py &
     OBD_PID=$!
     echo $SUDO_PASSWORD | sudo -S chmod 666 /dev/rfcomm1 &
 
-    echo $OBD_PID > ~/Desktop/Muse-main/obd_pid.txt
-    echo "OBD started with PID $(cat ~/Desktop/Muse-main/obd_pid.txt)"
+    echo $OBD_PID > ~/Desktop/Muse/obd_pid.txt
+    echo "OBD started with PID $(cat ~/Desktop/Muse/obd_pid.txt)"
 
 }
+
+
+#Radar 
+
 
 ############################# 停止 ################################
 
 #停止接封包
 stop_tcpdump() {
-    if [ -f ~/Desktop/Muse-main/tcpdump_pid.txt ]; then
-        TCPDUMP_PID=$(cat ~/Desktop/Muse-main/tcpdump_pid.txt)
+    if [ -f ~/Desktop/Muse/tcpdump_pid.txt ]; then
+        TCPDUMP_PID=$(cat ~/Desktop/Muse/tcpdump_pid.txt)
         if [ -n "$TCPDUMP_PID" ]; then
             echo "Attempting to kill TCPDump process $TCPDUMP_PID"
             echo $SUDO_PASSWORD | sudo -S kill -SIGINT $TCPDUMP_PID
@@ -99,7 +103,7 @@ stop_tcpdump() {
             else
                 echo "Process $TCPDUMP_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse-main/TCPDUMP_pid.txt
+            rm ~/Desktop/Muse/TCPDUMP_pid.txt
         else
             echo "No valid PID found in the TCPDump PID file"
         fi
@@ -110,8 +114,8 @@ stop_tcpdump() {
 
 # 停止 Master Clock
 stop_master_clock() {
-    if [ -f ~/Desktop/Muse-main/master_pid.txt ]; then
-        MASTER_CLOCK_PID=$(cat ~/Desktop/Muse-main/master_pid.txt)
+    if [ -f ~/Desktop/Muse/master_pid.txt ]; then
+        MASTER_CLOCK_PID=$(cat ~/Desktop/Muse/master_pid.txt)
         if [ -n "$MASTER_CLOCK_PID" ]; then
             echo "Attempting to kill Master clock process $MASTER_CLOCK_PID"
             echo $SUDO_PASSWORD | sudo -S kill -SIGINT $MASTER_CLOCK_PID
@@ -122,7 +126,7 @@ stop_master_clock() {
             else
                 echo "Process $MASTER_CLOCK_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse-main/master_pid.txt
+            rm ~/Desktop/Muse/master_pid.txt
         else
             echo "No valid PID found in the master PID file"
         fi
@@ -133,8 +137,8 @@ stop_master_clock() {
 
 # 停止摄像头脚本
 stop_camera() {
-    if [ -f ~/Desktop/Muse-main/camera_pid.txt ]; then
-        CAMERA_PID=$(cat ~/Desktop/Muse-main/camera_pid.txt)
+    if [ -f ~/Desktop/Muse/camera_pid.txt ]; then
+        CAMERA_PID=$(cat ~/Desktop/Muse/camera_pid.txt)
         if [ -n "$CAMERA_PID" ]; then
             echo "Attempting to kill Camera script process $CAMERA_PID"
             kill -SIGINT $CAMERA_PID
@@ -145,7 +149,7 @@ stop_camera() {
             else
                 echo "Process $CAMERA_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse-main/camera_pid.txt
+            rm ~/Desktop/Muse/camera_pid.txt
         else
             echo "No valid PID found in the camera PID file"
         fi
@@ -156,8 +160,8 @@ stop_camera() {
 
 # 停止 Livox Quickstart
 stop_livox() {
-    if [ -f ~/Desktop/Muse-main/livox_pid.txt ]; then
-        LIVOX_PID=$(cat ~/Desktop/Muse-main/livox_pid.txt)
+    if [ -f ~/Desktop/Muse/livox_pid.txt ]; then
+        LIVOX_PID=$(cat ~/Desktop/Muse/livox_pid.txt)
         if [ -n "$LIVOX_PID" ]; then
             echo "Attempting to kill Livox Lidar process $LIVOX_PID"
             kill -SIGINT $LIVOX_PID
@@ -168,7 +172,7 @@ stop_livox() {
             else
                 echo "Process $LIVOX_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse-main/livox_pid.txt
+            rm ~/Desktop/Muse/livox_pid.txt
         else
             echo "No valid PID found in the Livox PID file"
         fi
@@ -178,32 +182,32 @@ stop_livox() {
 }
 # bluetooth 
 stop_bluetooth() {
-    cd ~/Desktop/Muse-main
+    cd ~/Desktop/Muse
     ./bluetoothdisconnect.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > log/bluetooth_disconnect.log 2>&1 &
     DISCONNECT_PID=$!  # 获取 bluetoothdisconnect.expect 命令的 PID
 
     wait $DISCONNECT_PID
 
   # 输出bluetooth_status.txt的内容
-    echo "BLUETOOTH status is $(cat ~/Desktop/Muse-main/log/bluetoothdisconnect_status.txt)"
+    echo "BLUETOOTH status is $(cat ~/Desktop/Muse/log/bluetoothdisconnect_status.txt)"
 }
 
 # 停止 OBD
 stop_obd() {
-    if [ -f ~/Desktop/Muse-main/obd_pid.txt ]; then
-        OBD_PID=$(cat ~/Desktop/Muse-main/obd_pid.txt)
+    if [ -f ~/Desktop/Muse/obd_pid.txt ]; then
+        OBD_PID=$(cat ~/Desktop/Muse/obd_pid.txt)
         if [ -n "$OBD_PID" ]; then
             echo "Attempting to kill OBD process $OBD_PID"
             kill -SIGINT $OBD_PID
             sleep 1  # 等待进程响应
-	    mv speed_test.csv ~/Desktop/Muse-main/DATA
+	    mv speed_test.csv ~/Desktop/Muse/DATA
             if kill -0 $OBD_PID 2>/dev/null; then
                 echo "Process $OBD_PID did not terminate, forcing kill"
                 kill -9 $OBD_PID
             else
                 echo "Process $OBD_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse-main/obd_pid.txt
+            rm ~/Desktop/Muse/obd_pid.txt
         else
             echo "No valid PID found in the OBD PID file"
         fi

@@ -3,7 +3,6 @@ spawn sudo -v
 spawn sudo bluetoothctl
 [sudo] password for openhub: 
 Waiting to connect to bluetoothd...[22P[0;94m[bluetooth][0m# [KAgent registered
-[0;94m[bluetooth][0m# [K[[0;93mCHG[0m] Controller E4:60:17:93:EB:7A Pairable: yes
 [0;94m[bluetooth][0m# connect C0:B5:D7:7D:D3:DE
 Attempting to connect to C0:B5:D7:7D:D3:DE
 [0;94m[bluetooth][0m# [0;94m[openhub][0m# [K[K[[0;93mCHG[0m] Device C0:B5:D7:7D:D3:DE Connected: yes
@@ -38,5 +37,7 @@ Device C0:B5:D7:7D:D3:DE (public)
 	UUID: Device Information        (0000180a-0000-1000-8000-00805f9b34fb)
 	UUID: Vendor specific           (00005005-0000-1000-8000-0002ee000001)
 	Modalias: usb:v1D6Bp0246d0540
+	RSSI: -62
+	TxPower: 6
 [0;94m[openhub][0m# exit
 [0;94m[openhub][0m# [K

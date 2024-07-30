@@ -1,9 +1,23 @@
 spawn sudo bluetoothctl
 [sudo] password for openhub: 
 Waiting to connect to bluetoothd...[22P[0;94m[bluetooth][0m# [0;94m[openhub][0m# [K[KAgent registered
-[0;94m[openhub][0m# [K[[0;93mCHG[0m] Controller E4:60:17:93:EB:7A Pairable: yes
 [0;94m[openhub][0m# disconnect C0:B5:D7:7D:D3:DE
 Attempting to disconnect from C0:B5:D7:7D:D3:DE
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 39:A9:6C:58:93:D1 RSSI: -98
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device E5:69:B0:3A:D8:58 RSSI: -70
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 00:37:10:10:85:57 RSSI: -94
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 57:02:56:75:56:2B RSSI: -70
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 5C:64:B9:16:38:A2 RSSI: -58
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 5C:64:B9:16:38:A2 ManufacturerData Key: 0x004c
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 5C:64:B9:16:38:A2 ManufacturerData Value:
+[0;94m[openhub][0m# [K  01 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00  ................
+[0;94m[openhub][0m# [K  00                                               .               
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device CF:F3:26:6E:67:5D RSSI: -77
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device E5:69:B0:3A:D8:58 RSSI: -73
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 2B:0C:75:93:98:E3 RSSI: -99
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 23:5F:72:D6:EE:E7 RSSI: -93
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device 2A:8D:B9:9D:9C:71 RSSI: -68
+[0;94m[openhub][0m# [K[[0;93mCHG[0m] Device C0:88:D7:3F:4D:3E RSSI: -91
 [0;94m[openhub][0m# [K[[0;93mCHG[0m] Device C0:B5:D7:7D:D3:DE ServicesResolved: no
 [0;94m[openhub][0m# [KSuccessful disconnected
 [0;94m[openhub][0m# [0;94m[bluetooth][0m# Device C0:B5:D7:7D:D3:DE disconnected successfully
@@ -37,5 +51,7 @@ Device C0:B5:D7:7D:D3:DE (public)
 	UUID: Device Information        (0000180a-0000-1000-8000-00805f9b34fb)
 	UUID: Vendor specific           (00005005-0000-1000-8000-0002ee000001)
 	Modalias: usb:v1D6Bp0246d0540
+	RSSI: -43
+	TxPower: 6
 [0;94m[bluetooth][0m# exit
 [0;94m[bluetooth][0m# [K
