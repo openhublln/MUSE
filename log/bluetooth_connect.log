@@ -39,4 +39,4 @@ Device C0:B5:D7:7D:D3:DE (public)
 	UUID: Vendor specific           (00005005-0000-1000-8000-0002ee000001)
 	Modalias: usb:v1D6Bp0246d0540
 [0;94m[openhub][0m# exit
-[0;94m[openhub][0m# [K
+[0;94m[openhub][0m# [KCan't create device: Address already in use
