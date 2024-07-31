@@ -1,16 +1,18 @@
 import struct
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.fftpack import fft, fftshift
 from scapy.all import rdpcap, TCP, IP
 import os
 import pyshark
+import matplotlib.pyplot as plt
 
 def extract_tcp_packets(pcapng_file, target_ip):
+    # Extract TCP packets from the pcapng file with the specified target IP address
     capture = pyshark.FileCapture(pcapng_file, display_filter=f'ip.dst == {target_ip} and tcp')
     return capture
 
 def parse_packet(packet):
+    # Parse the information from a packet and return a dictionary with the parsed data
     packet_info = {}
 
     packet_info['source_ip'] = packet.ip.src
@@ -52,14 +54,13 @@ def parse_packet(packet):
     return packet_info
 
 def generate_range_doppler_map(i_data, q_data, num_samples=256):
-    # Combine I and Q data to form complex signal
+    # Combine I and Q data to form a complex signal
     rx_data = i_data + 1j * q_data
     
-    # Apply window function to reduce spectral leakage
+    # Apply a window function to reduce spectral leakage
     window = np.hamming(num_samples)
     rx_data_windowed = rx_data * window[:,np.newaxis]
 
-    print(window[:,np.newaxis].shape)
     range_doppler_map = np.fft.fft2(rx_data_windowed)
     # Only shift the velocity dimension (columns)
     range_doppler_map = np.fft.fftshift(range_doppler_map, axes=0)
@@ -69,6 +70,7 @@ def generate_range_doppler_map(i_data, q_data, num_samples=256):
     return range_doppler_map
 
 def save_range_doppler_map(range_doppler_map, filename):
+    # Save the range-doppler map as an image file
     plt.figure(figsize=(10, 6))
 
     # Define the extent of the plot
@@ -94,15 +96,15 @@ def save_range_doppler_map(range_doppler_map, filename):
     plt.close()
 
 def main():
-    pcapng_file = 'radar_20240729_163801.PCAP'  # 替换为你的 pcapng 文件路径
-    target_ip = '192.168.16.5'  # 目标IP地址
+    pcapng_file = 'radar_20240729_163801.PCAP'  # Replace with the path to your pcapng file
+    target_ip = '192.168.16.5'  # Target IP address
     tcp_packets = extract_tcp_packets(pcapng_file, target_ip)
 
     radc_data = b''
     rx_data = {'RX1': [], 'RX2': [], 'RX3': []}
 
-    # 定义保存图像的路径
-    output_directory = os.path.expanduser('~/DopplerMap_Pyshark')  # 替换为你想要保存的目录路径
+    # Define the path to save the images
+    output_directory = os.path.expanduser('~/DopplerMap_Pyshark')  # Replace with the directory path where you want to save the images
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
@@ -110,7 +112,6 @@ def main():
         parsed_data = parse_packet(pkt)
         if parsed_data['header'] == 'RADC' and len(pkt) == 76:
             print(f"Start parsing RADC data: {parsed_data['header']}")
-            #print(f"The timestamp of the packet is: {parsed_data['timestamp']}")
         elif parsed_data['header'] is None and len(pkt) != 76:
             radc_data += parsed_data['payload_data']
         elif parsed_data['header'] == 'DONE' and len(pkt) == 76:
@@ -143,7 +144,7 @@ def main():
                 save_range_doppler_map(mean_range_doppler_map, output_filename)
             else:
                 print(f"Error: Incomplete RADC data received. Length: {len(radc_data)} bytes")
-            radc_data = b''  # Reset for next set of RADC data
+            radc_data = b''  # Reset for the next set of RADC data
 
 if __name__ == '__main__':
     main()
