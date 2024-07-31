@@ -15,13 +15,22 @@ start_master_clock() {
     echo "Master clock started with PID $MASTER_CLOCK_PID"
 }
 
-# 接封包
-start_tcpdump() {
+start_radar_tcpdump() {
     cd ~/Desktop/Muse/DATA
-    echo $SUDO_PASSWORD | sudo -S tcpdump -i any port 57000 -w "capture_$(date +%Y%m%d_%H%M%S).pcap" &
-    TCPDUMP_PID=$!
-    echo $TCPDUMP_PID > ~/Desktop/Muse/log/TCPDUMP_pid.txt
-    echo "TCPDump started with PID $TCPDUMP_PID"
+    echo $SUDO_PASSWORD | sudo -S tcpdump -i any -tttt src host 192.168.16.2 and port 6172 -w "radar_$(date +%Y%m%d_%H%M%S).pcap" &
+    RADAR_TCPDUMP_PID=$!
+    echo $RADAR_TCPDUMP_PID > ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt
+    echo "Radar TCPDUMP started with PID $RADAR_TCPDUMP_PID"
+
+}
+
+# 接封包
+start_lidar_tcpdump() {
+    cd ~/Desktop/Muse/DATA
+    echo $SUDO_PASSWORD | sudo -S tcpdump -i any port 57000 -w "lidar_$(date +%Y%m%d_%H%M%S).pcap" &
+    LIDAR_TCPDUMP_PID=$!
+    echo $LIDAR_TCPDUMP_PID > ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt
+    echo "LIDAR TCPDump started with PID $LIDAR_TCPDUMP_PID"
 }
 
 # bluetooth 
@@ -85,32 +94,64 @@ start_obd() {
 
 
 #Radar 
+start_radar() {
 
+    cd ~/Desktop/Muse/
+    python read_radar.py &
+    radar_PID=$!
+    echo $radar_PID > ~/Desktop/Muse/radar_pid.txt
+    echo "Radar started with PID $(cat ~/Desktop/Muse/radar_pid)"
+
+}
 
 ############################# 停止 ################################
 
 #停止接封包
-stop_tcpdump() {
-    if [ -f ~/Desktop/Muse/tcpdump_pid.txt ]; then
-        TCPDUMP_PID=$(cat ~/Desktop/Muse/tcpdump_pid.txt)
-        if [ -n "$TCPDUMP_PID" ]; then
-            echo "Attempting to kill TCPDump process $TCPDUMP_PID"
-            echo $SUDO_PASSWORD | sudo -S kill -SIGINT $TCPDUMP_PID
+stop_lidar_tcpdump() {
+    if [ -f ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt ]; then
+        LIDAR_TCPDUMP_PID=$(cat ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt)
+        if [ -n "$LIDAR_TCPDUMP_PID" ]; then
+            echo "Attempting to kill TCPDump process $LIDAR_TCPDUMP_PID"
+            echo $SUDO_PASSWORD | sudo -S kill -SIGINT $LIDAR_TCPDUMP_PID
             sleep 1  # 等待进程响应
-            if sudo kill -0 $TCPDUMP_PID 2>/dev/null; then
-                echo "Process $TCPDUMP_PID did not terminate, forcing kill"
-                echo $SUDO_PASSWORD | sudo -S kill -9 $TCPDUMP_PID
+	    if sudo kill -0 $LIDAR_TCPDUMP_PID 2>/dev/null; then
+                echo "Process $LIDAR_TCPDUMP_PID did not terminate, forcing kill"
+                echo $SUDO_PASSWORD | sudo -S kill -9 $LIDAR_TCPDUMP_PID
             else
-                echo "Process $TCPDUMP_PID terminated successfully"
+                echo "Process $LIDAR_TCPDUMP_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/TCPDUMP_pid.txt
+            rm ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt
         else
-            echo "No valid PID found in the TCPDump PID file"
+            echo "No valid PID found in the LIDAR_TCPDump PID file"
         fi
     else
-        echo "TCPDump PID file does not exist"
+        echo "LIDAR TCPDump PID file does not exist"
     fi
 }
+
+# 停止接封包
+stop_radar_tcpdump() {
+    if [ -f ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt ]; then
+        LIDAR_TCPDUMP_PID=$(cat ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt)
+        if [ -n "$RADAR_TCPDUMP_PID" ]; then
+            echo "Attempting to kill TCPDump process $RADAR_TCPDUMP_PID"
+            echo $SUDO_PASSWORD | sudo -S kill -SIGINT $RADAR_TCPDUMP_PID
+            sleep 1  # 等待进程响应
+            if sudo kill -0 $RADAR_TCPDUMP_PID 2>/dev/null; then
+                echo "Process $RADAR_TCPDUMP_PID did not terminate, forcing kill"
+                echo $SUDO_PASSWORD | sudo -S kill -9 $RADAR_TCPDUMP_PID
+            else
+                echo "Process $RADAR_TCPDUMP_PID terminated successfully"
+            fi
+            rm ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt
+        else
+            echo "No valid PID found in the RADAR_TCPDUMP PID file"
+        fi
+    else
+        echo "RADAR TCPDump PID file does not exist"
+    fi
+}
+
 
 # 停止 Master Clock
 stop_master_clock() {
@@ -180,6 +221,31 @@ stop_livox() {
         echo "Livox PID file does not exist"
     fi
 }
+
+# 停止雷达进程
+stop_radar() {
+    if [ -f ~/Desktop/Muse/radar_pid.txt ]; then
+        RADAR_PID=$(cat ~/Desktop/Muse/radar_pid.txt)
+        if [ -n "$RADAR_PID" ]; then
+            echo "Attempting to kill Radar process $RADAR_PID"
+            kill -SIGINT $RADAR_PID
+            sleep 1  # 等待进程响应
+            if kill -0 $RADAR_PID 2>/dev/null; then
+                echo "Process $RADAR_PID did not terminate, forcing kill"
+                kill -9 $RADAR_PID
+            else
+                echo "Process $RADAR_PID terminated successfully"
+            fi
+            rm ~/Desktop/Muse/radar_pid.txt
+        else
+            echo "No valid PID found in the Radar PID file"
+        fi
+    else
+        echo "Radar PID file does not exist"
+    fi
+}
+
+
 # bluetooth 
 stop_bluetooth() {
     cd ~/Desktop/Muse
@@ -216,24 +282,31 @@ stop_obd() {
     fi
 }	
 
+
+################################## MAIN CODE ###################################
+
 # 启动所有相关进程
 start_all() { 
 
     start_livox &
     LIVOX_PID=$!
     
-    start_obd &
-    OBD_PID=$!
+    start_radar &
+    RADAR_PID=$!
+
+ #   start_obd &
+#    OBD_PID=$!
     
     start_camera &
     CAMERA_PID=$!
     
     wait $LIVOX_PID
-    wait $OBD_PID
+    wait $RADAR_PID
+#    wait $OBD_PID
     wait $CAMERA_PID
 
-    C0:B5:D7:7D:D3:DE
-echo "All processes started"
+    
+    echo "All processes started"
 
 }
 
@@ -245,12 +318,17 @@ setup_all() {
     start_master_clock &
     MASTER_CLOCK_PID=$!
 
-    start_tcpdump &
-    TCPDUMP_PID=$!
+    start_lidar_tcpdump &
+    LIDAR_TCPDUMP_PID=$!
+    
+    start_radar_tcpdump &
+    RADAR_TCPDUMP_PID=$!
+
 
     wait $BLUETOOTH_PID
     wait $MASTER_CLOCK_PID
-    wait $TCPDUMP_PID
+    wait $LIDAR_TCPDUMP_PID
+    wait $RADAR_TCPDUMP_PID
 
     echo "############### Setting OK"
 }
@@ -260,11 +338,13 @@ setup_all() {
 # 停止所有相关进程
 stop_all() {
     stop_camera
-    stop_tcpdump
+    stop_lidar_tcpdump
+    stop_radar_tcpdump
     stop_livox
+    stop_radar
     stop_master_clock
     stop_bluetooth
-    stop_obd
+#    stop_obd
     echo "All processes stopped"
 }
 
