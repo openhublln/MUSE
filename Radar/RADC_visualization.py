@@ -1,13 +1,16 @@
 import struct
-import matplotlib.pyplot as plt
 from scapy.all import rdpcap, TCP, IP
 
+import matplotlib.pyplot as plt
+
 def extract_tcp_packets(pcapng_file, target_ip):
+    # Read the pcapng file and extract TCP packets with the specified destination IP
     packets = rdpcap(pcapng_file)
     tcp_packets = [pkt for pkt in packets if TCP in pkt and pkt[IP].dst == target_ip]
     return tcp_packets
 
 def parse_packet(packet):
+    # Parse the TCP packet and extract relevant information
     packet_info = {}
 
     packet_info['source_ip'] = packet[IP].src
@@ -25,7 +28,8 @@ def parse_packet(packet):
     payload = bytes(packet[TCP].payload)
     packet_info['payload_length'] = len(payload)
 
-    if len(packet) == 62:
+    if len(packet) == 76 and len(payload) == 8:
+        # Extract header and payload data from the packet
         header = payload[:4].decode('ascii', errors='ignore')
         payload_length = struct.unpack('<I', payload[4:8])[0]
         payload_data = payload[8:8+payload_length]
@@ -43,8 +47,8 @@ def parse_packet(packet):
     return packet_info
 
 def main():
-    pcapng_file = 'radar_RADC_python_0722.pcapng'  # 替换为你的 pcapng 文件路径
-    target_ip = '192.168.16.1'  # 目标IP地址
+    pcapng_file = 'radar_20240729_163801.PCAP'  # Replace with your pcapng file path
+    target_ip = '192.168.16.5'  # Target IP address
     tcp_packets = extract_tcp_packets(pcapng_file, target_ip)
 
     radc_data = b''
@@ -52,17 +56,17 @@ def main():
 
     for pkt in tcp_packets:
         parsed_data = parse_packet(pkt)
-        if parsed_data['header'] == 'RADC' and len(pkt) == 62:
+        if parsed_data['header'] == 'RADC' and len(pkt) == 76:
             print(f"Start parsing RADC data: {parsed_data['header']}")
-        elif parsed_data['header'] is None and len(pkt) != 62:
+        elif parsed_data['header'] is None and len(pkt) != 76:
             radc_data += parsed_data['payload_data']
-        elif parsed_data['header'] == 'DONE' and len(pkt) == 62:
+        elif parsed_data['header'] == 'DONE' and len(pkt) == 76:
             if len(radc_data) == 786432:
                 rx1_data = struct.unpack('<' + 'H' * 131072, radc_data[:262144])
                 rx2_data = struct.unpack('<' + 'H' * 131072, radc_data[262144:524288])
                 rx3_data = struct.unpack('<' + 'H' * 131072, radc_data[524288:786432])
                 
-                # 分离 I-Channel 和 Q-Channel 数据
+                # Separate I-Channel and Q-Channel data
                 rx_data['RX1']['I'] = rx1_data[0::2]
                 rx_data['RX1']['Q'] = rx1_data[1::2]
                 rx_data['RX2']['I'] = rx2_data[0::2]
