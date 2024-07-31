@@ -121,4 +121,4 @@ This code follows the same logic as `combination_adjusted_lidar_infos.py` but sa
 # 3. Code Explanation: open3d_Visualize.py
 
 ## Overview
-This code visualizes the point cloud data.
+This code uses the result of `combination_to_CSV.py`. It inputs the CSV file to visualize the corresponding point cloud data in specific images.
