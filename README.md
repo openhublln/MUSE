@@ -53,23 +53,26 @@ Note: All related program code is set up based on `laptop: openhub-Precision-358
    - Ensure the Python environment is installed and all required Python libraries are installed.
 
 3. **The computer must support gPTP**
-   - gPTP (General Precision Time Protocol) is used for time synchronization. Please refer to relevant materials for configuration.
+   - gPTP (General Precision Time Protocol) is used for time synchronization. Refer to the relevant [gPTP 
+     Time Synchronization Guide]Refer to the relevant gPTP Time Synchronization Guide for configuration for 
+     configuration
 
 4. **Set Bluetooth device address and related configuration files**
    - Configuration file `automotive-master.cfg` is used for gPTP master clock settings.
-   - Refer to the Livox gPTP Time Synchronization Guide for specific configurations.
 
 ### Detailed Setup Steps
 
 #### Master Clock Configuration
 
-Configure gPTP time synchronization. Please refer to the [aforementioned gPTP Time Synchronization Guide](https://livox-wiki-cn.readthedocs.io/zh-cn/latest/tutorials/new_product/common/time_sync.html#gptp).
+Configure gPTP time synchronization. Please refer to the aforementioned gPTP Time Synchronization Guide.
 .
 
 #### LiDAR Setup
 
-1. Download and install Livox Viewer and Livox-SDK2.
-2. Refer to the Livox LiDAR official manual and Livox-SDK2 GitHub for setup and configuration.
+1. Download and install [Livox Viewer](https://www.livoxtech.com/downloads) and [Livox-SDK2] 
+   (https://github.com/Livox-SDK/Livox-SDK2).
+2. Refer to the Livox LiDAR official manual and Livox-SDK2 GitHub for setup and configuration.[Livox wiki] 
+   (https://livox-wiki-en.readthedocs.io/en/latest/index.html)
 
 #### Radar Setup
 
