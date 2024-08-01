@@ -1,9 +1,8 @@
 # Radar Offline Processing
 
-Doppler_Pyshark.py (Main): "The main code for parse the radar data", get the RADC data, compute the FFT, output as doppler heatmap.jpg
+**Doppler_Pyshark.py** (Main): It extracts the RADC data, computes the FFT, and outputs it as a Doppler heatmap in a .jpg file.
 
+**RADC_to_txt.py**: Parses the TCP/IP packets (.pcap), records the RADC information, and saves it as a .txt file.
 
-RADC_to_txt.py: Parse the Tcp/Ip package(.pcap), record the RADC info and save as txt file.
+**RADC_visualization.py**: Parses the TCP/IP packets (.pcap) and visualizes the RADC data.
 
-
-RADC_visualization.py: Parse the TCP/IP package(.pcap), visualization the RADC data.
