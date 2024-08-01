@@ -54,8 +54,7 @@ Note: All related program code is set up based on `laptop: openhub-Precision-358
 
 3. **The computer must support gPTP**
    - gPTP (General Precision Time Protocol) is used for time synchronization. Refer to the relevant [gPTP 
-     Time Synchronization Guide]Refer to the relevant gPTP Time Synchronization Guide for configuration for 
-     configuration
+     Time Synchronization Guide](https://livox-wiki-cn.readthedocs.io/zh-cn/latest/tutorials/new_product/common/time_sync.html#gptp) for configuration
 
 4. **Set Bluetooth device address and related configuration files**
    - Configuration file `automotive-master.cfg` is used for gPTP master clock settings.
