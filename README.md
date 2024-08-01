@@ -123,26 +123,17 @@ During data collection, you can stop the script by pressing `Ctrl + C`. Stopping
 
 - **Startup Script**: `livox_lidar_quick_start`
 - **Function**: Transmits point cloud data via UDP protocol, monitored and recorded using tcpdump.
-- **Description**: Once started, this module begins collecting point cloud data and transmits it via UDP protocol. The tcpdump tool listens to the specified port and records all transmitted data packets, generating point cloud data files.
+- **Description**: Once started, this module begins collecting point cloud data and transmits it via the UDP protocol. The tcpdump tool listens to the specified port and records all transmitted data packets, saving them as .pcap files.
 
 ### Radar Module
 
 - **Startup Script**: `read_radar.py`
 - **Function**: Transmits data packets via TCP protocol, monitored and recorded using tcpdump.
-- **Description**: Once started, this module begins collecting radar data and transmits it via TCP protocol. The tcpdump tool listens to the specified port and records all transmitted data packets, generating radar data files.
+- **Description**: Once started, this module begins collecting radar data and transmits it via the TCP protocol. The tcpdump tool listens to the specified port and records all transmitted data packets, saving them as .pcap files.
 
 ### OBD Module
 
 - **Startup Script**: `speed_OBD.py`
 - **Function**: Connects to the OBD device via Bluetooth and collects vehicle diagnostic data.
-- **Description**: Once started, this module connects to the OBD device via Bluetooth and begins collecting real-time vehicle diagnostic data. The data is saved to a specified file for subsequent analysis.
-
-## Logs and Output
-
-All logs and output files are stored in the specified directories. Please ensure these directories exist and have appropriate permissions. The following are the output descriptions for each module:
-
-- **Camera Module**: Image files are named by timestamp and stored in the specified directory.
-- **LiDAR Module**: Point cloud data files are stored in the specified directory, with filenames including the collection timestamp.
-- **Radar Module**: Radar data files are stored in the specified directory, with filenames including the collection timestamp.
-- **OBD Module**: Vehicle diagnostic data files are stored in the specified directory, with filenames including the collection timestamp.
+- **Description**: Once started, this module connects to the OBD device via Bluetooth and begins collecting real-time vehicle diagnostic data. The data is saved as a CSV file for subsequent analysis.
 
