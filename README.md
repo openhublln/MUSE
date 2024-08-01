@@ -1,6 +1,4 @@
 # Muse
-muse
-
 ## Network Setup Instructions
 
 ### Overview
@@ -75,7 +73,18 @@ Configure gPTP time synchronization. Please refer to the [aforementioned gPTP Ti
 
 #### Radar Setup
 
+#### Radar Setup
 Refer to the K-MD2 radar official documentation and Technical Documentation for setup.
+
+For more detailed information, please visit: [K-MD2 Engineering Sample](https://rfbeam.ch/product/k-md2-engineering-sample/).
+
+This page includes the datasheet, control panel software, and the software's user manual.
+Note that the control panel software is only supported on Windows.
+
+Before starting, you need to use the control panel to perform the basic settings of the radar.
+For instance, configuring the radar output items such as RADC, RMRD, etc. Currently, the setup is configured to output only RADC.
+You can also set the detection range and speed of the radar. Refer to the user manual for appropriate adjustments.
+
 
 #### Bluetooth Connection Script Setup
 
