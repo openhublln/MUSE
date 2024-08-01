@@ -270,7 +270,14 @@ stop_obd() {
             echo "Attempting to kill OBD process $OBD_PID"
             kill -SIGINT $OBD_PID
             sleep 1  
-	    mv speed_test.csv ~/Desktop/Muse/DATA
+
+	    timestamp=$(date +"%Y%m%d_%H%M%S")
+            base_name="speed_test.csv"
+            dest_dir="$HOME/Desktop/Muse/DATA"
+            new_name="$dest_dir/speed_test_$timestamp.csv"
+
+            mv "$base_name" "$new_name"
+     
             if kill -0 $OBD_PID 2>/dev/null; then
                 echo "Process $OBD_PID did not terminate, forcing kill"
                 kill -9 $OBD_PID
