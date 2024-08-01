@@ -69,10 +69,8 @@ Configure gPTP time synchronization. Please refer to the aforementioned gPTP Tim
 
 #### LiDAR Setup
 
-1. Download and install [Livox Viewer](https://www.livoxtech.com/downloads) and [Livox-SDK2] 
-   (https://github.com/Livox-SDK/Livox-SDK2).
-2. Refer to the Livox LiDAR official manual and Livox-SDK2 GitHub for setup and configuration.[Livox wiki] 
-   (https://livox-wiki-en.readthedocs.io/en/latest/index.html)
+1. Download and install [Livox Viewer](https://www.livoxtech.com/downloads) and [Livox-SDK2](https://github.com/Livox-SDK/Livox-SDK2).
+2. Refer to the Livox LiDAR official manual and Livox-SDK2 GitHub for setup and configuration.[Livox wiki](https://livox-wiki-en.readthedocs.io/en/latest/index.html)
 
 #### Radar Setup
 
