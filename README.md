@@ -65,7 +65,8 @@ Note: All related program code is set up based on `laptop: openhub-Precision-358
 
 #### Master Clock Configuration
 
-Configure gPTP time synchronization. Please refer to the aforementioned gPTP Time Synchronization Guide.
+Configure gPTP time synchronization. Please refer to the [aforementioned gPTP Time Synchronization Guide](https://livox-wiki-cn.readthedocs.io/zh-cn/latest/tutorials/new_product/common/time_sync.html#gptp).
+.
 
 #### LiDAR Setup
 
