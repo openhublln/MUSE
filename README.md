@@ -73,7 +73,6 @@ Configure gPTP time synchronization. Please refer to the [aforementioned gPTP Ti
 
 #### Radar Setup
 
-#### Radar Setup
 Refer to the K-MD2 radar official documentation and Technical Documentation for setup.
 
 For more detailed information, please visit: [K-MD2 Engineering Sample](https://rfbeam.ch/product/k-md2-engineering-sample/).
