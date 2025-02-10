@@ -21,7 +21,7 @@ start_master_clock() {
 # Listen to Radar port
 start_radar_tcpdump() {
     cd ~/Desktop/Muse/DATA
-    echo $SUDO_PASSWORD | sudo -S tcpdump -i any -tttt src host 192.168.16.2 and port 6172 -w "radar_$(date +%Y%m%d_%H%M%S).pcap" &
+    echo $SUDO_PASSWORD | sudo -S tcpdump -i any -tttt src host 192.168.11.11 and port 1000 -w "radar_$(date +%Y%m%d_%H%M%S).pcap" &
     RADAR_TCPDUMP_PID=$!
     echo $RADAR_TCPDUMP_PID > ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt
     echo "Radar TCPDUMP started with PID $RADAR_TCPDUMP_PID"
@@ -302,8 +302,8 @@ start_all() {
     start_livox &
     LIVOX_PID=$!
     
-    start_radar &
-    RADAR_PID=$!
+    # start_radar &
+    # RADAR_PID=$!
 
  #   start_obd &
 #    OBD_PID=$!
@@ -312,7 +312,7 @@ start_all() {
     CAMERA_PID=$!
     
     wait $LIVOX_PID
-    wait $RADAR_PID
+    # wait $RADAR_PID
 #    wait $OBD_PID
     wait $CAMERA_PID
 
@@ -355,7 +355,7 @@ stop_all() {
     stop_lidar_tcpdump
     stop_radar_tcpdump
     stop_livox
-    stop_radar
+    # stop_radar
     stop_master_clock
     stop_bluetooth
 #    stop_obd
