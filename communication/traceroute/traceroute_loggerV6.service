@@ -1,0 +1,12 @@
+[Unit]
+Description=Traceroute Logger Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/openhub/MUSE/communication/traceroute/traceroute_logger.py -i 30 	2001:6a8:500:e006::132
+Restart=always
+User=openhub
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
