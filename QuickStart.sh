@@ -11,38 +11,38 @@ BT_ADDRESS="C0:B5:D7:7D:D3:DE"
 
 #  master clock setting
 start_master_clock() {
-    cd ~/Documents/linuxptp/configs
+    cd ~/linuxptp/configs
     echo $SUDO_PASSWORD | sudo -S ptp4l -i enp0s31f6 -S -ml 6 -f automotive-master.cfg &
     MASTER_CLOCK_PID=$!
-    echo $MASTER_CLOCK_PID > ~/Desktop/Muse/master_pid.txt
+    echo $MASTER_CLOCK_PID > ~/Muse/master_pid.txt
     echo "Master clock started with PID $MASTER_CLOCK_PID"
 }
 
 # Listen to Radar port
 start_radar_tcpdump() {
-    cd ~/Desktop/Muse/DATA
+    cd ~/Muse/DATA
     echo $SUDO_PASSWORD | sudo -S tcpdump -i any -tttt src host 192.168.11.11 and port 1000 -w "radar_$(date +%Y%m%d_%H%M%S).pcap" &
     RADAR_TCPDUMP_PID=$!
-    echo $RADAR_TCPDUMP_PID > ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt
+    echo $RADAR_TCPDUMP_PID > ~/Muse/RADAR_TCPDUMP_pid.txt
     echo "Radar TCPDUMP started with PID $RADAR_TCPDUMP_PID"
 
 }
 
 # Listen to lidar port
 start_lidar_tcpdump() {
-    cd ~/Desktop/Muse/DATA
+    cd ~/Muse/DATA
     echo $SUDO_PASSWORD | sudo -S tcpdump -i any port 57000 -w "lidar_$(date +%Y%m%d_%H%M%S).pcap" &
     LIDAR_TCPDUMP_PID=$!
-    echo $LIDAR_TCPDUMP_PID > ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt
+    echo $LIDAR_TCPDUMP_PID > ~/Muse/LIDAR_TCPDUMP_pid.txt
     echo "LIDAR TCPDump started with PID $LIDAR_TCPDUMP_PID"
 }
 
 # bluetooth setting
 start_bluetooth() {
-    cd ~/Desktop/Muse
+    cd ~/Muse
     ./bluetooth.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > log/bluetooth_connect.log 2>&1 &
     BT_PID=$!  
-    echo $BT_PID > ~/Desktop/Muse/log/bluetooth_pid.txt
+    echo $BT_PID > ~/Muse/log/bluetooth_pid.txt
 
     wait $BT_PID 
 
@@ -57,7 +57,7 @@ start_bluetooth() {
     echo "BLUETOOTH started with PID $BT_PID"
     
 
-    echo "BLUETOOTH status is $(cat ~/Desktop/Muse/log/bluetooth_status.txt)"
+    echo "BLUETOOTH status is $(cat ~/Muse/log/bluetooth_status.txt)"
 }
 
 
@@ -67,32 +67,32 @@ start_bluetooth() {
 
 # Activate the camera
 start_camera() {
-    cd ~/Desktop/Muse/
+    cd ~/Muse/
     python camera.py &
     CAMERA_PID=$!
-    echo $CAMERA_PID > ~/Desktop/Muse/camera_pid.txt
+    echo $CAMERA_PID > ~/Muse/camera_pid.txt
     echo "Camera script started with PID $CAMERA_PID"
 }
 
 # Activate the lidar
 start_livox() {
-    cd ~/Documents/Livox-test/Livox-SDK2/build/samples/livox_lidar_quick_start || exit
-    ./livox_lidar_quick_start ../../../samples/livox_lidar_quick_start/hap_config.json > ~/Desktop/Muse/log/loglivox_output.log 2>&1 &
+    cd ~/Livox-SDK2/build/samples/livox_lidar_quick_start || exit
+    ./livox_lidar_quick_start ../../../samples/livox_lidar_quick_start/hap_config.json > ~/Muse/log/loglivox_output.log 2>&1 &
     LIVOX_PID=$!
-    echo $LIVOX_PID > ~/Desktop/Muse/livox_pid.txt
+    echo $LIVOX_PID > ~/Muse/livox_pid.txt
     echo "Livox Lidar started with PID $LIVOX_PID"
 }
 
 #execute OBD's code 
 start_obd() {
 
-    cd ~/Desktop/Muse/
+    cd ~/Muse/
     python speed_OBD.py &
     OBD_PID=$!
     echo $SUDO_PASSWORD | sudo -S chmod 666 /dev/rfcomm1 &
 
-    echo $OBD_PID > ~/Desktop/Muse/obd_pid.txt
-    echo "OBD started with PID $(cat ~/Desktop/Muse/obd_pid.txt)"
+    echo $OBD_PID > ~/Muse/obd_pid.txt
+    echo "OBD started with PID $(cat ~/Muse/obd_pid.txt)"
 
 }
 
@@ -100,11 +100,11 @@ start_obd() {
 # Activate the Radar 
 start_radar() {
 
-    cd ~/Desktop/Muse/
+    cd ~/Muse/
     python read_radar.py &
     radar_PID=$!
-    echo $radar_PID > ~/Desktop/Muse/radar_pid.txt
-    echo "Radar started with PID $(cat ~/Desktop/Muse/radar_pid.txt)"
+    echo $radar_PID > ~/Muse/radar_pid.txt
+    echo "Radar started with PID $(cat ~/Muse/radar_pid.txt)"
 
 }
 
@@ -112,8 +112,8 @@ start_radar() {
 
 # stop listening to the lidar
 stop_lidar_tcpdump() {
-    if [ -f ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt ]; then
-        LIDAR_TCPDUMP_PID=$(cat ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt)
+    if [ -f ~/Muse/LIDAR_TCPDUMP_pid.txt ]; then
+        LIDAR_TCPDUMP_PID=$(cat ~/Muse/LIDAR_TCPDUMP_pid.txt)
         if [ -n "$LIDAR_TCPDUMP_PID" ]; then
             echo "Attempting to kill TCPDump process $LIDAR_TCPDUMP_PID"
             echo $SUDO_PASSWORD | sudo -S kill -SIGINT $LIDAR_TCPDUMP_PID
@@ -124,7 +124,7 @@ stop_lidar_tcpdump() {
             else
                 echo "Process $LIDAR_TCPDUMP_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/LIDAR_TCPDUMP_pid.txt
+            rm ~/Muse/LIDAR_TCPDUMP_pid.txt
         else
             echo "No valid PID found in the LIDAR_TCPDump PID file"
         fi
@@ -135,8 +135,8 @@ stop_lidar_tcpdump() {
 
 # stop listening to the radar
 stop_radar_tcpdump() {
-    if [ -f ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt ]; then
-        LIDAR_TCPDUMP_PID=$(cat ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt)
+    if [ -f ~/Muse/RADAR_TCPDUMP_pid.txt ]; then
+        LIDAR_TCPDUMP_PID=$(cat ~/Muse/RADAR_TCPDUMP_pid.txt)
         if [ -n "$RADAR_TCPDUMP_PID" ]; then
             echo "Attempting to kill TCPDump process $RADAR_TCPDUMP_PID"
             echo $SUDO_PASSWORD | sudo -S kill -SIGINT $RADAR_TCPDUMP_PID
@@ -147,7 +147,7 @@ stop_radar_tcpdump() {
             else
                 echo "Process $RADAR_TCPDUMP_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/RADAR_TCPDUMP_pid.txt
+            rm ~/Muse/RADAR_TCPDUMP_pid.txt
         else
             echo "No valid PID found in the RADAR_TCPDUMP PID file"
         fi
@@ -159,8 +159,8 @@ stop_radar_tcpdump() {
 
 # close Master Clock
 stop_master_clock() {
-    if [ -f ~/Desktop/Muse/master_pid.txt ]; then
-        MASTER_CLOCK_PID=$(cat ~/Desktop/Muse/master_pid.txt)
+    if [ -f ~/Muse/master_pid.txt ]; then
+        MASTER_CLOCK_PID=$(cat ~/Muse/master_pid.txt)
         if [ -n "$MASTER_CLOCK_PID" ]; then
             echo "Attempting to kill Master clock process $MASTER_CLOCK_PID"
             echo $SUDO_PASSWORD | sudo -S kill -SIGINT $MASTER_CLOCK_PID
@@ -171,7 +171,7 @@ stop_master_clock() {
             else
                 echo "Process $MASTER_CLOCK_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/master_pid.txt
+            rm ~/Muse/master_pid.txt
         else
             echo "No valid PID found in the master PID file"
         fi
@@ -182,8 +182,8 @@ stop_master_clock() {
 
 # turn off the camera
 stop_camera() {
-    if [ -f ~/Desktop/Muse/camera_pid.txt ]; then
-        CAMERA_PID=$(cat ~/Desktop/Muse/camera_pid.txt)
+    if [ -f ~/Muse/camera_pid.txt ]; then
+        CAMERA_PID=$(cat ~/Muse/camera_pid.txt)
         if [ -n "$CAMERA_PID" ]; then
             echo "Attempting to kill Camera script process $CAMERA_PID"
             kill -SIGINT $CAMERA_PID
@@ -194,7 +194,7 @@ stop_camera() {
             else
                 echo "Process $CAMERA_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/camera_pid.txt
+            rm ~/Muse/camera_pid.txt
         else
             echo "No valid PID found in the camera PID file"
         fi
@@ -205,8 +205,8 @@ stop_camera() {
 
 # stop the lidar process
 stop_livox() {
-    if [ -f ~/Desktop/Muse/livox_pid.txt ]; then
-        LIVOX_PID=$(cat ~/Desktop/Muse/livox_pid.txt)
+    if [ -f ~/Muse/livox_pid.txt ]; then
+        LIVOX_PID=$(cat ~/Muse/livox_pid.txt)
         if [ -n "$LIVOX_PID" ]; then
             echo "Attempting to kill Livox Lidar process $LIVOX_PID"
             kill -SIGINT $LIVOX_PID
@@ -217,7 +217,7 @@ stop_livox() {
             else
                 echo "Process $LIVOX_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/livox_pid.txt
+            rm ~/Muse/livox_pid.txt
         else
             echo "No valid PID found in the Livox PID file"
         fi
@@ -228,8 +228,8 @@ stop_livox() {
 
 # stop the radar process
 stop_radar() {
-    if [ -f ~/Desktop/Muse/radar_pid.txt ]; then
-        RADAR_PID=$(cat ~/Desktop/Muse/radar_pid.txt)
+    if [ -f ~/Muse/radar_pid.txt ]; then
+        RADAR_PID=$(cat ~/Muse/radar_pid.txt)
         if [ -n "$RADAR_PID" ]; then
             echo "Attempting to kill Radar process $RADAR_PID"
             kill -SIGINT $RADAR_PID
@@ -240,7 +240,7 @@ stop_radar() {
             else
                 echo "Process $RADAR_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/radar_pid.txt
+            rm ~/Muse/radar_pid.txt
         else
             echo "No valid PID found in the Radar PID file"
         fi
@@ -252,20 +252,20 @@ stop_radar() {
 
 # interrupt bluetooth 
 stop_bluetooth() {
-    cd ~/Desktop/Muse
+    cd ~/Muse
     ./bluetoothdisconnect.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > log/bluetooth_disconnect.log 2>&1 &
     DISCONNECT_PID=$! 
 
     wait $DISCONNECT_PID
 
  
-    echo "BLUETOOTH status is $(cat ~/Desktop/Muse/log/bluetoothdisconnect_status.txt)"
+    echo "BLUETOOTH status is $(cat ~/Muse/log/bluetoothdisconnect_status.txt)"
 }
 
 # stop the obd process
 stop_obd() {
-    if [ -f ~/Desktop/Muse/obd_pid.txt ]; then
-        OBD_PID=$(cat ~/Desktop/Muse/obd_pid.txt)
+    if [ -f ~/Muse/obd_pid.txt ]; then
+        OBD_PID=$(cat ~/Muse/obd_pid.txt)
         if [ -n "$OBD_PID" ]; then
             echo "Attempting to kill OBD process $OBD_PID"
             kill -SIGINT $OBD_PID
@@ -284,7 +284,7 @@ stop_obd() {
             else
                 echo "Process $OBD_PID terminated successfully"
             fi
-            rm ~/Desktop/Muse/obd_pid.txt
+            rm ~/Muse/obd_pid.txt
         else
             echo "No valid PID found in the OBD PID file"
         fi
