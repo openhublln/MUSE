@@ -12,7 +12,7 @@ BT_ADDRESS="C0:B5:D7:7D:D3:DE"
 #  master clock setting
 start_master_clock() {
     cd ~/linuxptp/configs
-    echo $SUDO_PASSWORD | sudo -S ptp4l -i enp0s31f6 -S -ml 6 -f automotive-master.cfg &
+    echo $SUDO_PASSWORD | sudo -S ptp4l -i enp1s0 -S -ml 6 -f automotive-master.cfg &
     MASTER_CLOCK_PID=$!
     echo $MASTER_CLOCK_PID > ~/Muse/master_pid.txt
     echo "Master clock started with PID $MASTER_CLOCK_PID"
@@ -46,7 +46,7 @@ start_bluetooth() {
 
     wait $BT_PID 
 
-    echo $SUDO_PASSWORD | sudo -S rfcomm release 1 &
+    echo $SUDO_PASSWORD | sudo -S rfcomm release 1
     
   #  echo $SUDO_PASSWORD | chmod 666 /dev/rfcomm1 &
      
@@ -305,15 +305,15 @@ start_all() {
     # start_radar &
     # RADAR_PID=$!
 
- #   start_obd &
-#    OBD_PID=$!
+    start_obd &
+    OBD_PID=$!
     
     start_camera &
     CAMERA_PID=$!
     
     wait $LIVOX_PID
     # wait $RADAR_PID
-#    wait $OBD_PID
+    wait $OBD_PID
     wait $CAMERA_PID
 
     
@@ -358,7 +358,7 @@ stop_all() {
     # stop_radar
     stop_master_clock
     stop_bluetooth
-#    stop_obd
+    stop_obd
     echo "All processes stopped"
 }
 

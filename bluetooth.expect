@@ -9,7 +9,8 @@ set bt_address [lindex $argv 1]
 
 # 保持 sudo 会话
 spawn sudo -v
-expect "password for"
+# expect "password for"
+expect "Mot de passe de"
 send "$password\r"
 expect eof
 
@@ -17,26 +18,35 @@ expect eof
 spawn sudo bluetoothctl
 
 # 处理密码提示
-expect "password for"
+# expect "password for"
+expect "Mot de passe de"
 send "$password\r"
 
+# Discover addresses
+# expect "# "
+# send "scan on\r"
+
 # 连接到指定的蓝牙设备
+# expect "$bt_address"
 expect "# "
 send "connect $bt_address\r"
+
+# expect "# "
+# send "scan off\r"
 
 # 等待连接过程完成
 expect {
     -re "Connection successful" {
         send_user "Device $bt_address connected successfully\n"
-        exec echo "DeviceConnected" > ~/Desktop/Muse-main/log/bluetooth_status.txt
+        exec echo "DeviceConnected" > ~/Muse/log/bluetooth_status.txt
     }
     -re "Failed to connect" {
         send_user "Failed to connect to $bt_address\n"
-        exec echo "DeviceNotConnected" > ~/Desktop/Muse-main/log/bluetooth_status.txt
+        exec echo "DeviceNotConnected" > ~/Muse/log/bluetooth_status.txt
     }
     timeout {
         send_user "Connection attempt timed out\n"
-        exec echo "DeviceNotConnected" > ~/Desktop/Muse-main/log/bluetooth_status.txt
+        exec echo "DeviceNotConnected" > ~/Muse/log/bluetooth_status.txt
     }
 }
 

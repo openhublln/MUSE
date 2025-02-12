@@ -10,7 +10,8 @@ set bt_address [lindex $argv 1]
 spawn sudo bluetoothctl
 
 # 处理密码提示
-expect "password for"
+# expect "password for"
+expect "Mot de passe de"
 send "$password\r"
 
 # 连接到指定的蓝牙设备
@@ -21,15 +22,15 @@ send "disconnect $bt_address\r"
 expect {
     -re "Successful disconnected|Successful disconnected" {
         send_user "Device $bt_address disconnected successfully\n"
-        exec echo "DeviceDisconnected" > /home/openhub/Desktop/Muse-main/log/bluetoothdisconnect_status.txt
+        exec echo "DeviceDisconnected" > ~/Muse/log/bluetoothdisconnect_status.txt
     }
     -re "Failed to disconnect|Failed to disconnect" {
         send_user "Failed to disconnect from $bt_address\n"
-        exec echo "DeviceNotDisconnected" >/home/openhub/Desktop/Muse-main/log/bluetoothdisconnect_status.txt
+        exec echo "DeviceNotDisconnected" >~/Muse/log/bluetoothdisconnect_status.txt
     }
     timeout {
         send_user "Disconnection attempt timed out\n"
-        exec echo "DeviceNotDisconnected" > /home/openhub/Desktop/Muse-main/log/bluetoothdisconnect_status.txt
+        exec echo "DeviceNotDisconnected" > ~/Muse/log/bluetoothdisconnect_status.txt
     }
 }
 
