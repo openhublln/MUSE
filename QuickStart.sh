@@ -4,8 +4,17 @@
 SUDO_PASSWORD="openhub"
 
 #Obd's Bluetooth
-#BT_ADDRESS="66:1E:32:30:33:38"
-BT_ADDRESS="C0:B5:D7:7D:D3:DE"
+BT_ADDRESS="66:1E:32:30:33:38"
+# BT_ADDRESS="C0:B5:D7:7D:D3:DE"
+# BT_ADDRESS=E8:D5:2B:40:40:1C
+
+# Data folder path
+DATA_PATH=~/Muse/DATA_$(date +%Y%m%d_%H%M%S)
+# DATA_PATH=/media/openhub/SAMSUNG/Muse/DATA
+echo $DATA_PATH
+mkdir $DATA_PATH
+sleep 5
+echo $DATA_PATH
 
 ################### SetUp #######################
 
@@ -20,8 +29,9 @@ start_master_clock() {
 
 # Listen to Radar port
 start_radar_tcpdump() {
-    cd ~/Muse/DATA
-    echo $SUDO_PASSWORD | sudo -S tcpdump -i any -tttt src host 192.168.11.11 and port 1000 -w "radar_$(date +%Y%m%d_%H%M%S).pcap" &
+    cd $DATA_PATH
+    echo $SUDO_PASSWORD | sudo -S tcpdump -i enp1s0 -tttt src host 192.168.11.11 and port 1000 -w "radar_$(date +%Y%m%d_%H%M%S).pcapng" &
+    # echo $SUDO_PASSWORD | sudo -S dumpcap -i enp1s0 -f "src host 192.168.11.11 and udp and udp src port 1000" -n -g openhub -w "dumpcap/radar_$(date +%Y%m%d_%H%M%S).pcapng" &
     RADAR_TCPDUMP_PID=$!
     echo $RADAR_TCPDUMP_PID > ~/Muse/RADAR_TCPDUMP_pid.txt
     echo "Radar TCPDUMP started with PID $RADAR_TCPDUMP_PID"
@@ -30,8 +40,8 @@ start_radar_tcpdump() {
 
 # Listen to lidar port
 start_lidar_tcpdump() {
-    cd ~/Muse/DATA
-    echo $SUDO_PASSWORD | sudo -S tcpdump -i any port 57000 -w "lidar_$(date +%Y%m%d_%H%M%S).pcap" &
+    cd $DATA_PATH
+    echo $SUDO_PASSWORD | sudo -S tcpdump -i any port 57000 -w "lidar_$(date +%Y%m%d_%H%M%S).pcapng" &
     LIDAR_TCPDUMP_PID=$!
     echo $LIDAR_TCPDUMP_PID > ~/Muse/LIDAR_TCPDUMP_pid.txt
     echo "LIDAR TCPDump started with PID $LIDAR_TCPDUMP_PID"
@@ -40,7 +50,7 @@ start_lidar_tcpdump() {
 # bluetooth setting
 start_bluetooth() {
     cd ~/Muse
-    ./bluetooth.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > log/bluetooth_connect.log 2>&1 &
+    ./bluetooth.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > ~/Muse/log/bluetooth_connect.log 2>&1 &
     BT_PID=$!  
     echo $BT_PID > ~/Muse/log/bluetooth_pid.txt
 
@@ -52,7 +62,7 @@ start_bluetooth() {
      
 
  #   Bluetooth bonding
-    echo $SUDO_PASSWORD | sudo -S rfcomm bind /dev/rfcomm1 $BT_ADDRESS >> log/bluetooth_connect.log 2>&1
+    echo $SUDO_PASSWORD | sudo -S rfcomm bind /dev/rfcomm1 $BT_ADDRESS >> ~/Muse/log/bluetooth_connect.log 2>&1
   
     echo "BLUETOOTH started with PID $BT_PID"
     
@@ -68,7 +78,7 @@ start_bluetooth() {
 # Activate the camera
 start_camera() {
     cd ~/Muse/
-    python camera.py &
+    python camera.py $DATA_PATH > ~/Muse/log/camera_py.log 2>&1 &
     CAMERA_PID=$!
     echo $CAMERA_PID > ~/Muse/camera_pid.txt
     echo "Camera script started with PID $CAMERA_PID"
@@ -77,7 +87,7 @@ start_camera() {
 # Activate the lidar
 start_livox() {
     cd ~/Livox-SDK2/build/samples/livox_lidar_quick_start || exit
-    ./livox_lidar_quick_start ../../../samples/livox_lidar_quick_start/hap_config.json > ~/Muse/log/loglivox_output.log 2>&1 &
+    ./livox_lidar_quick_start ../../../samples/livox_lidar_quick_start/hap_config.json > ~/Muse/log/livox_output.log 2>&1 &
     LIVOX_PID=$!
     echo $LIVOX_PID > ~/Muse/livox_pid.txt
     echo "Livox Lidar started with PID $LIVOX_PID"
@@ -87,7 +97,7 @@ start_livox() {
 start_obd() {
 
     cd ~/Muse/
-    python speed_OBD.py &
+    python speed_OBD.py $DATA_PATH > ~/Muse/log/speed_output.log 2>&1 &
     OBD_PID=$!
     echo $SUDO_PASSWORD | sudo -S chmod 666 /dev/rfcomm1 &
 
@@ -96,17 +106,6 @@ start_obd() {
 
 }
 
-
-# Activate the Radar 
-start_radar() {
-
-    cd ~/Muse/
-    python read_radar.py &
-    radar_PID=$!
-    echo $radar_PID > ~/Muse/radar_pid.txt
-    echo "Radar started with PID $(cat ~/Muse/radar_pid.txt)"
-
-}
 
 ############################# stop func ################################
 
@@ -117,7 +116,7 @@ stop_lidar_tcpdump() {
         if [ -n "$LIDAR_TCPDUMP_PID" ]; then
             echo "Attempting to kill TCPDump process $LIDAR_TCPDUMP_PID"
             echo $SUDO_PASSWORD | sudo -S kill -SIGINT $LIDAR_TCPDUMP_PID
-            sleep 1  
+            sleep 2  
 	    if sudo kill -0 $LIDAR_TCPDUMP_PID 2>/dev/null; then
                 echo "Process $LIDAR_TCPDUMP_PID did not terminate, forcing kill"
                 echo $SUDO_PASSWORD | sudo -S kill -9 $LIDAR_TCPDUMP_PID
@@ -136,7 +135,7 @@ stop_lidar_tcpdump() {
 # stop listening to the radar
 stop_radar_tcpdump() {
     if [ -f ~/Muse/RADAR_TCPDUMP_pid.txt ]; then
-        LIDAR_TCPDUMP_PID=$(cat ~/Muse/RADAR_TCPDUMP_pid.txt)
+        RADAR_TCPDUMP_PID=$(cat ~/Muse/RADAR_TCPDUMP_pid.txt)
         if [ -n "$RADAR_TCPDUMP_PID" ]; then
             echo "Attempting to kill TCPDump process $RADAR_TCPDUMP_PID"
             echo $SUDO_PASSWORD | sudo -S kill -SIGINT $RADAR_TCPDUMP_PID
@@ -226,34 +225,11 @@ stop_livox() {
     fi
 }
 
-# stop the radar process
-stop_radar() {
-    if [ -f ~/Muse/radar_pid.txt ]; then
-        RADAR_PID=$(cat ~/Muse/radar_pid.txt)
-        if [ -n "$RADAR_PID" ]; then
-            echo "Attempting to kill Radar process $RADAR_PID"
-            kill -SIGINT $RADAR_PID
-            sleep 1  
-            if kill -0 $RADAR_PID 2>/dev/null; then
-                echo "Process $RADAR_PID did not terminate, forcing kill"
-                kill -9 $RADAR_PID
-            else
-                echo "Process $RADAR_PID terminated successfully"
-            fi
-            rm ~/Muse/radar_pid.txt
-        else
-            echo "No valid PID found in the Radar PID file"
-        fi
-    else
-        echo "Radar PID file does not exist"
-    fi
-}
-
 
 # interrupt bluetooth 
 stop_bluetooth() {
     cd ~/Muse
-    ./bluetoothdisconnect.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > log/bluetooth_disconnect.log 2>&1 &
+    ./bluetoothdisconnect.expect "$SUDO_PASSWORD" "$BT_ADDRESS" > ~/Muse/log/bluetooth_disconnect.log 2>&1 &
     DISCONNECT_PID=$! 
 
     wait $DISCONNECT_PID
@@ -273,7 +249,7 @@ stop_obd() {
 
 	    timestamp=$(date +"%Y%m%d_%H%M%S")
             base_name="speed_test.csv"
-            dest_dir="$HOME/Desktop/Muse/DATA"
+            dest_dir="$DATA_PATH"
             new_name="$dest_dir/speed_test_$timestamp.csv"
 
             mv "$base_name" "$new_name"
@@ -301,9 +277,6 @@ start_all() {
 
     start_livox &
     LIVOX_PID=$!
-    
-    # start_radar &
-    # RADAR_PID=$!
 
     start_obd &
     OBD_PID=$!
@@ -312,7 +285,6 @@ start_all() {
     CAMERA_PID=$!
     
     wait $LIVOX_PID
-    # wait $RADAR_PID
     wait $OBD_PID
     wait $CAMERA_PID
 
@@ -325,6 +297,7 @@ start_all() {
 # setup
 
 setup_all() {
+    # echo $SUDO_PASSWORD | sudo -S mkdir $DATA_PATH/dumpcap
 
     start_bluetooth &
     BLUETOOTH_PID=$!
@@ -355,7 +328,6 @@ stop_all() {
     stop_lidar_tcpdump
     stop_radar_tcpdump
     stop_livox
-    # stop_radar
     stop_master_clock
     stop_bluetooth
     stop_obd
