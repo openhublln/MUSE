@@ -2,12 +2,13 @@ import cv2
 import os
 from datetime import datetime
 import time
+import sys
 
 # 获取脚本目录
-script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = sys.argv[1]
 
 # 定义固定的保存路径
-save_path_rgba = os.path.join(script_dir, "DATA", "camera_rgba")
+save_path_rgba = os.path.join(script_dir, "camera_rgba")
 
 # 创建保存目录（如果不存在）
 os.makedirs(save_path_rgba, exist_ok=True)
@@ -83,7 +84,7 @@ def capture_and_save_frames(save_path_rgba):
             #print(f"buffertimestamp: {formatted_buffertimestamp}")
 
             # 将帧转换为 RGBA
-            frame_rgba = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+            frame_rgba = cv2.cvtColor(frame, cv2.COLOR_RGB2RGBA)
 
             # 保存为 RGBA 图像
             rgba_filename = f"{timestamp_datetime.strftime('%Y-%m-%d_%H-%M-%S-%f')}.png"
