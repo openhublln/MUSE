@@ -23,11 +23,11 @@ expect "Mot de passe de"
 send "$password\r"
 
 # Discover addresses
-# expect "# "
-# send "scan on\r"
+expect "# "
+send "scan on\r"
 
 # 连接到指定的蓝牙设备
-# expect "$bt_address"
+expect "$bt_address"
 expect "# "
 send "connect $bt_address\r"
 
