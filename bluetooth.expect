@@ -38,15 +38,15 @@ send "connect $bt_address\r"
 expect {
     -re "Connection successful" {
         send_user "Device $bt_address connected successfully\n"
-        exec echo "DeviceConnected" > ~/Muse/log/bluetooth_status.txt
+        exec echo "DeviceConnected" > ~/MUSE/log/bluetooth_status.txt
     }
     -re "Failed to connect" {
         send_user "Failed to connect to $bt_address\n"
-        exec echo "DeviceNotConnected" > ~/Muse/log/bluetooth_status.txt
+        exec echo "DeviceNotConnected" > ~/MUSE/log/bluetooth_status.txt
     }
     timeout {
         send_user "Connection attempt timed out\n"
-        exec echo "DeviceNotConnected" > ~/Muse/log/bluetooth_status.txt
+        exec echo "DeviceNotConnected" > ~/MUSE/log/bluetooth_status.txt
     }
 }
 

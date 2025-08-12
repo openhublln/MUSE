@@ -1,0 +1,9 @@
+[Unit]
+Description=Monitor /dev/video0 for camera availabilty in Muse
+
+[Path]
+PathExists=/dev/video0
+Unit=muse.service
+
+[Install]
+WantedBy=multi-user.target
