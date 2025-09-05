@@ -3,3 +3,7 @@ linux*
 log/*
 DATA/*
 DATA*/*
+*/__pycache__/
+*_pid.txt
+log
+.vscode
