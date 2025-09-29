@@ -194,7 +194,7 @@ void LivoxLidarPushMsgCallback(const uint32_t handle, const uint8_t dev_type, co
 
 int main(int argc, const char *argv[]) {
   if (argc != 4) {
-    fprintf(stderr, "usage: control <config_file_path> <frequency_hz> <output_dir>\n");
+    fprintf(stderr, "usage: acquisition <config_file_path> <frequency_hz> <output_dir>\n");
     return -1;
   }
   const std::string path = argv[1];
