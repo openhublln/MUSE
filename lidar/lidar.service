@@ -6,7 +6,7 @@ After=network.target
 User=openhub
 ExecStartPre=/home/openhub/MUSE/lidar/build/control /home/openhub/MUSE/lidar/config.json start
 ExecStart=/home/openhub/MUSE/lidar/build/acquisition /home/openhub/MUSE/lidar/config.json 20 %i
-ExecStopPost=/home/openhub/MUSE/lidar/control /home/openhub/MUSE/lidar/config.json stop
+ExecStopPost=/home/openhub/MUSE/lidar/build/control /home/openhub/MUSE/lidar/config.json stop
 Restart=on-failure
 
 [Install]
