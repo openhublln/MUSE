@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 ExecStart=/usr/bin/python3 /home/openhub/MUSE/communication/traceroute/traceroute_logger.py -i 30 	2001:6a8:500:e006::132
-Restart=always
+Restart=on-failure
 User=openhub
 Environment="PYTHONUNBUFFERED=1"
 
