@@ -6,7 +6,7 @@ import sys
 import os
 
 script_dir = sys.argv[1]
-save_path = os.path.join(script_dir, "speed_test.csv")
+save_path = os.path.join(script_dir, "speed.csv")
 # 
 connection = OBD('/dev/rfcomm1', fast=False) 
 cmd = commands.SPEED
@@ -19,11 +19,12 @@ def read_speed(connection):
         return speed_kmh
     return None
 
-# Open the CSV file in write mode and create a csv writer object
-with open(save_path, mode='w', newline='') as file:
+# Open the CSV file in append mode and create a csv writer object
+with open(save_path, mode='a', newline='') as file:
     writer = csv.writer(file)
-    # Write the header
-    writer.writerow(["Time", "Speed (km/h)"])
+    # Write the header if the file is empty
+    if os.stat(save_path).st_size == 0:
+        writer.writerow(["Time", "Speed (km/h)"])
 
     while connection.is_connected():
         speed = read_speed(connection)
