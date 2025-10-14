@@ -1,0 +1,11 @@
+[Unit]
+Description=Camera recording service
+After=network.target
+
+[Service]
+ExecStart=/home/openhub/MUSE/camera/start_camera.sh %I
+Restart=on-failure
+User=openhub
+
+[Install]
+WantedBy=multi-user.target
