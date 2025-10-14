@@ -5,6 +5,7 @@ After=network.target
 [Service]
 User=openhub
 ExecStart=/home/openhub/MUSE/.venv/bin/python /home/openhub/MUSE/obd/speed_OBD.py %I
+Environment="PYTHONUNBUFFERED=1"
 Restart=on-failure
 
 [Install]
