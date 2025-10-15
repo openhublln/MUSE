@@ -4,7 +4,7 @@ Wants=gpsd.service
 After=network-online.target gpsd.service
 
 [Service]
-ExecStart=/usr/bin/python3 /home/openhub/MUSE/communication/gpsd_exporter/gpsd_exporter.py
+ExecStart=/home/openhub/MUSE/.venv/bin/python /home/openhub/MUSE/communication/gpsd_exporter/gpsd_exporter.py
 Restart=on-failure
 RestartSec=10
 User=openhub

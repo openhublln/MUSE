@@ -3,7 +3,7 @@ Description=RM500U Monitoring Service
 After=network-pre.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/openhub/MUSE/communication/rm500u-manager/monitoring.py  -i 30 /dev/ttyUSB2
+ExecStart=/home/openhub/MUSE/.venv/bin/python /home/openhub/MUSE/communication/rm500u-manager/monitoring.py  -i 30 /dev/ttyUSB2
 workingDirectory=/home/openhub/MUSE/communication/rm500u-manager
 Restart=on-failure
 User=openhub
