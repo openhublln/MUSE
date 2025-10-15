@@ -8,15 +8,18 @@ BT_ADDRESS="66:1E:32:30:33:38"
 
 # create new directory with timestamp
 mkdir -p $OUTPUT_DIR
+chown openhub:openhub $OUTPUT_DIR
 
 # launch services
 
 # lidar
 mkdir -p $OUTPUT_DIR/lidar
+chown openhub:openhub $OUTPUT_DIR/lidar
 systemctl start lidar@$OUTPUT_DIR/lidar
 
 # camera
 mkdir -p $OUTPUT_DIR/camera
+chown openhub:openhub $OUTPUT_DIR/camera
 systemctl start camera@$OUTPUT_DIR/camera
 
 # obd
@@ -24,6 +27,7 @@ systemctl start camera@$OUTPUT_DIR/camera
 rfcomm bind /dev/rfcomm1  $BT_ADDRESS
 
 mkdir -p $OUTPUT_DIR/obd
+chown openhub:openhub $OUTPUT_DIR/obd
 systemctl start obd@$OUTPUT_DIR/obd
 
 # communication
