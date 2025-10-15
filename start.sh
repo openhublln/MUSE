@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATA_DIR="/home/openhub/data"
-TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+TIMESTAMP=$(date +%Y_%m_%d_%H_%M_%S)
 OUTPUT_DIR=$DATA_DIR/$TIMESTAMP
 
 BT_ADDRESS="66:1E:32:30:33:38"

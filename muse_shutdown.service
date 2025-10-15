@@ -1,0 +1,11 @@
+[Unit]
+Description=MUSE Shutdown Processes
+DefaultDependencies=no
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/openhub/MUSE/stop.sh
+
+[Install]
+WantedBy=halt.target reboot.target shutdown.target
