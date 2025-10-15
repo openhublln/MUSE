@@ -8,6 +8,7 @@ BT_ADDRESS="66:1E:32:30:33:38"
 
 # create new directory with timestamp
 mkdir -p $OUTPUT_DIR
+chown openhub:openhub $DATA_DIR
 chown openhub:openhub $OUTPUT_DIR
 
 # launch services
