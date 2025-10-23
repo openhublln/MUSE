@@ -1,7 +1,7 @@
 [Unit]
 Description=MUSE Startup Processes
 DefaultDependencies=no
-After=network.target
+After=multi-user.target
 
 [Service]
 Type=oneshot
@@ -9,4 +9,4 @@ ExecStart=/home/openhub/MUSE/start.sh
 TimeoutSec=120
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=basic.target
