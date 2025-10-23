@@ -49,7 +49,7 @@ systemctl start obd@$OUTPUT_DIR/obd
 
 # communication
 ## gps
-#systemctl start gpsd_exporter
+systemctl start gpsd_exporter
 ## modem
 systemctl start rm500u_logger
 ## performance measurement
