@@ -6,12 +6,11 @@ OUTPUT_DIR=$DATA_DIR/$TIMESTAMP
 
 BT_ADDRESS="66:1E:32:30:33:38"
 WIFI_INTERFACE="wlp0s20f3"
-REMOTE_IP=130.104.205.198
-REMOTE_PORT=2222
 
 # if connected to wifi network, sync rsync DATA_DIR
 if iw $WIFI_INTERFACE link  | grep Connected; then
-    rsync -acz --delete --stats -e "ssh -p $REMOTE_PORT" $DATA_DIR openhub@$REMOTE_IP:DATA/
+    rsync -acz --remove-source-files --stats $DATA_DIR data_store:DATA/
+    find $DATA_DIR -type d -empty -delete
     # power off as completed
     sleep 120
     # test if user is still logged in
