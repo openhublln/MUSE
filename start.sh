@@ -5,6 +5,23 @@ TIMESTAMP=$(date +%Y_%m_%d_%H_%M_%S)
 OUTPUT_DIR=$DATA_DIR/$TIMESTAMP
 
 BT_ADDRESS="66:1E:32:30:33:38"
+WIFI_INTERFACE="wlp0s20f3"
+REMOTE_IP=130.104.205.198
+REMOTE_PORT=2222
+
+# if connected to wifi network, sync rsync DATA_DIR
+if iw $WIFI_INTERFACE link  | grep Connected; then
+    rsync -acz --delete --stats -e "ssh -p $REMOTE_PORT" $DATA_DIR openhub@$REMOTE_IP:DATA/
+    # power off as completed
+    sleep 120
+    # test if user is still logged in
+    if who | grep openhub; then
+        echo "User openhub is logged in, not powering off."
+        exit 0
+    fi
+    poweroff
+    exit 0
+fi
 
 # create new directory with timestamp
 mkdir -p $OUTPUT_DIR
