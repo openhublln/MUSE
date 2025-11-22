@@ -1,139 +1,65 @@
-import socket
-import struct
-import time
-import os
+import logging
 import signal
-from utils import *
-from datetime import datetime
+import struct
+from kdm7 import KMD7
 
-# Function to print log messages with timestamps
-def report(*arg):
-    print(f"[{datetime.now()}]", *arg)
+logger = logging.getLogger("kmd7")
 
-# Decorator to ensure a connection is established before calling the function
-def requires_connection(func):
-    def call(*args, **kwargs):
-        if args[0].SOCKET is None:
-            report(f"connection required (func='{func.__name__}' aborted)")
-            return
-        else:
-            return func(*args, **kwargs)
-    return call
+RADC_MASK = 0x01  
+RFFT_MASK = 0x02  
+PDAT_MASK = 0x04  
+TDAT_MASK = 0x08 
+DONE_MASK = 0x40 
 
-# Class representing a command to be sent/received
-class Command:
-    def __init__(self, type: str, length: int):
-        self.type = type
-        self.length = length
-        self.timestamp = None
-
-        if length > 0:
-            self.buffer = bytearray(length)
-            self.memory = memoryview(self.buffer)
-        else:
-            self.buffer = self.memory = None
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="K-MD7 example")
+    parser.add_argument("--port", required=True, help="Serial port (e.g. /dev/ttyUSB0 or COM3)")
+    parser.add_argument("--baudcode", type=int, default=0, help="INIT baud code (0=115200)")
+    args = parser.parse_args()
     
-    def __repr__(self):
-        return f"Command<{self.type},{self.length}> [{self.timestamp}]"
-
-# Class to handle radar operations
-class Radar:
-    def __init__(self, IP='192.168.16.2', PORT=6172, TIMEOUT=3.0):
-        self.IP, self.PORT, self.TIMEOUT = IP, PORT, TIMEOUT
-        self.SOCKET = None
-
-        self.buffer = bytearray(8)
-        self.memory = memoryview(self.buffer)
+    with KMD7(args.port, baud=115200, timeout=5.0) as k:
+        signal.signal(signal.SIGINT, k.signal_handler)
+        vers = k.init(baud_setting_code=args.baudcode)
+        logger.info("Module version: %s", vers)                
         
-    # Connect to the radar server
-    def connect(self):
-        try:
-            self.SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.SOCKET.settimeout(self.TIMEOUT)
-            self.SOCKET.connect((self.IP, self.PORT))
-            report("connection to radar : OK")
-        except Exception as e:
-            self.SOCKET = None
-            report(f"connection to the radar : NOT OK (error : {e})")
-    
-    # Disconnect from the radar server
-    @requires_connection
-    def disconnect(self):
-        try:
-            self.send_message("GBYE")
-            time.sleep(1)  # Wait for the radar server to process the GBYE command
-            self.SOCKET.close()
-            report("disconnection from the radar : OK")
-        except Exception as e:
-            report(f"disconnection from the radar : NOT OK (error : {e})")
-    
-    # Send a message to the radar server
-    @requires_connection
-    def send_message(self, header, payload_length=0, payload=None):
-        try:
-            if isinstance(payload, str):
-                b_payload = payload.encode()
-            elif isinstance(payload, (int, float)):
-                b_payload = struct.pack("<I", payload)
+        # Set radar parameters
+        k.send_rbfr_command(0)
+        k.send_rspi_command(0)
+        k.send_rrai_command(0)
+        k.send_thof_command(12)
+        k.send_trft_command(0)
+        k.send_mira_command(40)
+        k.send_mara_command(60)
+        k.send_mian_command(-30)
+        k.send_maan_command(30)
+        k.send_misp_command(40)
+        k.send_masp_command(60)
+        k.send_dedi_command(2)
+        k.send_packet("GRPS")    
+                            
+        
+        mask = PDAT_MASK | DONE_MASK
+        k.enable_streaming(mask)
+
+        for header, payload in k.stream_loop():
+            if header == "RPST":
+                params = k._parse_grps_parameters(payload)
+                print(params)  
+            if header == "PDAT":
+                parsed = k._parse_pdat_payload(payload)
+                logger.info("PDAT streaming: %s", parsed)
+            if header == "TDAT":
+                parsed = k._parse_tdat_payload(payload)
+                logger.info("TDAT streaming: %s", parsed)
+            if header == "RFFT":
+                parsed = k._parse_rfft_payload(payload)
+                logger.info("RFFT streaming: %s", parsed)
+            if header == "RADC":
+                parsed = k._parse_radc_payload(payload)
+                logger.info("RADC streaming: %s", parsed)
+            elif header == "DONE":
+                frame_num = struct.unpack("<I", payload)[0] if payload else None
+                logger.debug("DONE frame %s", frame_num)
             else:
-                b_payload = b""
-                
-            self.SOCKET.send(header.encode() + struct.pack("<I", payload_length) + b_payload)
-            report(f"sent : <{header},{payload}>")
-        except Exception as e:
-            report(f"not sent : <{header},{payload}> (error : {e})")
-    
-    # Initialize transmission with a series of commands
-    @requires_connection
-    def init_transmission(self):
-        for init_command in init_commands:
-            self.send_message(*init_command)
-            time.sleep(0.05)
-        time.sleep(1.2)
-    
-    # Listen for commands from the radar server
-    @requires_connection
-    def listening(self):
-        start, it = time.time(), 0
-        prev_time = int(start)
-        while True:
-            command = self.receive_command()
-
-    # Receive a command from the radar server
-    def receive_command(self):
-        nbytes = self.SOCKET.recv_into(self.memory)
-        command = Command(bytes(self.buffer[:4]).decode(), struct.unpack("<I", bytes(self.buffer[4:]))[0])
-        command.timestamp = time.time()
-        
-        nbytes = 0
-        while nbytes != command.length:
-            nbytes += self.SOCKET.recv_into(command.memory[nbytes:])
-        
-        if nbytes != command.length:
-            report(f" not received : {command} (with only {nbytes} bytes)")
-        return command
-
-# Radar setup and connection
-radar = Radar()
-radar.connect()
-radar.init_transmission()
-
-# Signal handler for graceful shutdown on CTRL+C
-def signal_handler(sig, frame):
-    """Handle the SIGINT (Ctrl+C) signal."""
-    report("CTRL+C detected, stopping radar server...")
-    time.sleep(1)  # Wait for the radar server to process the STOP command
-    radar.disconnect()
-    report("Shutdown complete")
-    exit(0)
-
-# Register the signal handler for graceful shutdown
-signal.signal(signal.SIGINT, signal_handler)
-
-# Start listening for commands
-try:
-    radar.listening()
-except Exception as e:
-    print("error during function:", e)
-    time.sleep(1)  # Wait for the radar server to process the STOP command
-    radar.disconnect()
+                logger.debug("STREAM RX %s len=%d", header, len(payload) if payload else 0)
