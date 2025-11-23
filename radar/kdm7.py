@@ -1,8 +1,11 @@
+from datetime import datetime
 import logging
 import struct
 import time
+import h5py
 from typing import Iterator, List, Optional, Tuple
 
+import numpy as np
 import serial
 
 logger = logging.getLogger("kmd7")
@@ -228,12 +231,55 @@ class KMD7:
                     logger.info("Streaming stopped gracefully")
                     break
                 else:
+                    self.disable_streaming(0)
+                    self.close()
                     raise
+    
+    def save_measurements(self, measurements: list, output_file:str):
+        with h5py.File(output_file, 'a') as f:
+            timestamp = datetime.now().isoformat()
+            grp = f.create_group(timestamp)
+            
+            tdat_count = 0
+            pdat_count = 0
+            rfft_count = 0
+            radc_count = 0
+            
+            for data in measurements:
+                if data["type"] == "tdat":
+                    target_grp = grp.create_group(f"tdat_{tdat_count}")
+                    target_grp.attrs["distance_m"] = data["distance_m"]
+                    target_grp.attrs["speed_kmh"] = data["speed_kmh"]
+                    target_grp.attrs["angle_deg"] = data["angle_deg"]
+                    target_grp.attrs["magnitude_db"] = data["magnitude_db"]
+                    target_grp.attrs["track_id"] = data["track_id"]
+                    tdat_count += 1
+                elif data["type"] == "pdat":
+                    target_grp = grp.create_group(f"pdat_{pdat_count}")
+                    target_grp.attrs["distance_m"] = data["distance_m"]
+                    target_grp.attrs["speed_kmh"] = data["speed_kmh"]
+                    target_grp.attrs["angle_deg"] = data["angle_deg"]
+                    target_grp.attrs["magnitude_db"] = data["magnitude_db"]
+                    pdat_count += 1
+                elif data["type"] == "rfft":
+                    rfft_grp = grp.create_group(f"rfft_{rfft_count}")
+                    rfft_grp.create_dataset("spectrum_db", data=np.array(data["spectrum_db"]))
+                    rfft_grp.create_dataset("threshold_db", data=np.array(data["threshold_db"]))
+                    rfft_count += 1
+                elif data["type"] == "radc":
+                    radc_grp = grp.create_group(f"radc_{radc_count}")
+                    radc_grp.create_dataset("if1_freq_a_i", data=np.array(data["if1_freq_a_i"]))
+                    radc_grp.create_dataset("if1_freq_a_q", data=np.array(data["if1_freq_a_q"]))
+                    radc_grp.create_dataset("if2_freq_a_i", data=np.array(data["if2_freq_a_i"]))
+                    radc_grp.create_dataset("if2_freq_a_q", data=np.array(data["if2_freq_a_q"]))
+                    radc_grp.create_dataset("if1_freq_b_i", data=np.array(data["if1_freq_b_i"]))
+                    radc_grp.create_dataset("if1_freq_b_q", data=np.array(data["if1_freq_b_q"]))
+                    radc_count += 1
 
     # --------------------
     # Payload parsers
     # --------------------
-    def _parse_tdat_payload(self, payload: bytes) -> List[dict]:
+    def parse_tdat_payload(self, payload: bytes) -> List[dict]:
         """
         TDAT: up to 8 targets, each 9 bytes:
         Distance [cm] UINT16
@@ -250,6 +296,7 @@ class KMD7:
                 break
             dist, spd, ang, mag, tid = struct.unpack("<Hh h H B", block)
             res.append({
+                "type": "tdat",
                 "distance_m": dist / 100.0,
                 "speed_kmh": spd / 100.0,
                 "angle_deg": ang / 100.0,
@@ -258,7 +305,7 @@ class KMD7:
             })
         return res
 
-    def _parse_pdat_payload(self, payload: bytes) -> List[dict]:
+    def parse_pdat_payload(self, payload: bytes) -> List[dict]:
         """
         PDAT: raw targets, up to 24 targets, 8 bytes each:
         Distance [cm] UINT16
@@ -274,6 +321,7 @@ class KMD7:
                 break
             dist, spd, ang, mag = struct.unpack("<Hh h H", block)
             res.append({
+                "type": "pdat",
                 "distance_m": dist / 100.0,
                 "speed_kmh": spd / 100.0,
                 "angle_deg": ang / 100.0,
@@ -281,7 +329,7 @@ class KMD7:
             })
         return res
 
-    def _parse_rfft_payload(self, payload: bytes) -> dict:
+    def parse_rfft_payload(self, payload: bytes) -> dict:
         """
         RFFT: 2048 bytes: 512 spectrum points [dB x 100] UINT16 (1024 bytes)
                512 threshold points [dB x 100] UINT16 (1024 bytes)
@@ -293,9 +341,9 @@ class KMD7:
         thr = struct.unpack("<512H", payload[1024:])
         spec_db = [v / 100.0 for v in spec]
         thr_db = [v / 100.0 for v in thr]
-        return {"spectrum_db": spec_db, "threshold_db": thr_db}
+        return [{"type": "rfft", "spectrum_db": spec_db, "threshold_db": thr_db}]
 
-    def _parse_radc_payload(self, payload: bytes) -> dict:
+    def parse_radc_payload(self, payload: bytes) -> dict:
         """
         RADC: Raw ADC data from radar, 6144 bytes total
         - IF1 Frequency A: 1024 UINT16 values (2048 bytes)
@@ -307,18 +355,30 @@ class KMD7:
         if len(payload) != 6144:
             raise KMD7Exception(f"Unexpected RADC len {len(payload)} (expected 6144)")
         
-        if1_freq_a = struct.unpack("<1024H", payload[0:2048])
-        if2_freq_a = struct.unpack("<1024H", payload[2048:4096])
-        if1_freq_b = struct.unpack("<1024H", payload[4096:6144])
+        if1_freq_a_data = struct.unpack("<1024H", payload[0:2048])
+        if1_freq_a_i = if1_freq_a_data[:512]
+        if1_freq_a_q = if1_freq_a_data[512:]
         
-        return {
-        "if1_freq_a": if1_freq_a,
-        "if2_freq_a": if2_freq_a,
-        "if1_freq_b": if1_freq_b,
-    }
+        if2_freq_a_data = struct.unpack("<1024H", payload[2048:4096])
+        if2_freq_a_i = if2_freq_a_data[:512]
+        if2_freq_a_q = if2_freq_a_data[512:]
+        
+        if1_freq_b_data = struct.unpack("<1024H", payload[4096:6144])
+        if1_freq_b_i = if1_freq_b_data[:512]
+        if1_freq_b_q = if1_freq_b_data[512:]
+        
+        return [{
+        "type": "radc",
+        "if1_freq_a_i": if1_freq_a_i,
+        "if1_freq_a_q": if1_freq_a_q,
+        "if2_freq_a_i": if2_freq_a_i,
+        "if2_freq_a_q": if2_freq_a_q,
+        "if1_freq_b_i": if1_freq_b_i,
+        "if1_freq_b_q": if1_freq_b_q,
+        }]
         
     
-    def _parse_grps_parameters(self, payload: bytes) -> dict:
+    def parse_grps_parameters(self, payload: bytes) -> dict:
         """
         GRPS response parsing (if needed)
         """
