@@ -6,6 +6,9 @@ cp ./lidar/lidar@.service /etc/systemd/system/lidar@.service
 # camera
 cp ./camera/camera@.service /etc/systemd/system/camera@.service
 
+# # radar
+# cp ./radar/radar@.service /etc/systemd/system/radar@.service
+
 # obd
 cp ./obd/obd@.service /etc/systemd/system/obd@.service
 

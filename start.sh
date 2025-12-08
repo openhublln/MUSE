@@ -39,6 +39,11 @@ mkdir -p $OUTPUT_DIR/camera
 chown openhub:openhub $OUTPUT_DIR/camera
 systemctl start camera@$OUTPUT_DIR/camera
 
+# # radar
+# mkdir -p $OUTPUT_DIR/radar
+# chown openhub:openhub $OUTPUT_DIR/radar
+# systemctl start radar@$OUTPUT_DIR/radar
+
 # obd
 ## Bluetooth pairing
 rfcomm bind /dev/rfcomm1  $BT_ADDRESS

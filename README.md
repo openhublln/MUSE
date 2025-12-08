@@ -1,139 +1,140 @@
-# Muse
-## Network Setup Instructions
+MUSE Multi‑Sensor Capture Stack
+===============================
 
-### Overview
-This document provides instructions for setting up the network configuration for several devices, including LiDAR, radar, and a laptop. The devices will be connected via a wired network to a switch, establishing an internal network using the 192.168.16.0/24 subnet. Detailed steps and configurations are provided below.
+This repository configures and runs the MUSE embedded multi‑sensor box (vehicle‑mounted). It orchestrates LiDAR, camera, OBD, GPS, modem diagnostics, network performance, and traceroute logging via systemd services. Radar capture is present but currently **WIP** and disabled by default.
 
-### Steps
+## Accessing the device
+- SSH: `ssh openhub@192.168.0.11`
+- Code location: `/home/openhub/MUSE`
+- Data location: `/home/openhub/data/<timestamp>/...`
 
-1. **Connecting Devices**:
-   - Connect the LiDAR, radar, and laptop to the switch using Ethernet cables.
-   - Ensure all devices are properly powered and connected to the switch.
+## High‑level workflow
+1. On boot, `muse_startup.service` runs `start.sh`.
+2. `start.sh` creates a timestamped data directory under `/home/openhub/data/<TS>/`.
+3. Services are started (LiDAR, camera, OBD, GPS exporter, modem monitor, iperf logger, traceroute V4/V6). Radar is commented out.
+4. On shutdown, `muse_shutdown.service` runs `stop.sh` to stop all services.
+5. When Wi‑Fi is connected, `start.sh` will rsync accumulated data to `data_store:DATA/`, prune emptied dirs, wait 120s, and power off if no user session is active.
 
-2. **Network Configuration**:
-   - **Radar**:
-     - The radar will use its default IP address: `192.168.16.2`.
-   - **LiDAR**:
-     - Use the Livox Viewer 2 software to modify the default IP address of the LiDAR.
-     - Set the IP address to: `192.168.16.100`.
-   - **Laptop**:
-     - Configure the laptop to use a manual IP address.
-     - Set the IP address to: `192.168.16.5`.
-   - **Other Devices**:
-     - Cameras will be connected via USB.
-     - The OBD2 device will connect directly to the laptop using Bluetooth.
+## Services overview
+- LiDAR (`lidar@<path>.service`)
+  - Binaries: `/home/openhub/MUSE/lidar/build/control`, `/home/openhub/MUSE/lidar/build/acquisition`
+  - Config: `/home/openhub/MUSE/lidar/config.json`
+  - Output: `<run>/lidar/*.ply` (binary little‑endian PLY frames)
+- Camera (`camera@<path>.service`)
+  - Script: `/home/openhub/MUSE/camera/start_camera.sh %I`
+  - Source: `/dev/video0`, MJPEG 2592x1944@20fps
+  - Output: `<run>/camera/<timestamp>.mkv`
+- OBD (`obd@<path>.service`)
+  - Script: `/home/openhub/MUSE/obd/speed_OBD.py %I`
+  - Input: `/dev/rfcomm1` (Bluetooth bound to vehicle OBD dongle)
+  - Output: `<run>/obd/speed.csv` with timestamped speed samples
+- GPS logger (`gpsd_exporter.service`)
+  - Script: `/home/openhub/MUSE/communication/gpsd_exporter/gpsd_exporter.py`
+  - Depends on gpsd; writes timeseries to MongoDB `gps.gps`
+- Modem monitor (`rm500u_logger.service`)
+  - Script: `/home/openhub/MUSE/communication/rm500u-manager/monitoring.py -i 30 /dev/ttyUSB2`
+  - Writes signal/cell/temps/counters/USB net status to MongoDB `RM500U.*`
+- Network performance (`iperf_logger.service`)
+  - Script: `/home/openhub/MUSE/communication/iperf/iperf_logger.py -i 60 130.104.229.74`
+  - Cycles UDP bitrates, stores raw iperf3 JSON to MongoDB `iperf.iperf`
+- Traceroute (`traceroute_loggerV4.service`, `traceroute_loggerV6.service`)
+  - Script: `/home/openhub/MUSE/communication/traceroute/traceroute_logger.py -i 30 <dest>`
+  - Writes hops to MongoDB `traceroute.traceroute`
+- Radar (**WIP**, services commented out)
+  - Scripts: `/home/openhub/MUSE/radar/read_radar.py`, `kdm7.py`
+  - Services exist but are not installed/started by default.
 
-### Diagram
-![OpenHub-Muse Architecture Diagram (1)](https://github.com/user-attachments/assets/1fb00f06-6135-403b-97f7-c2b15824871e)
+## Startup/shutdown hooks
+- `muse_startup.service` (oneshot, WantedBy=basic.target) → `/home/openhub/MUSE/start.sh`
+- `muse_shutdown.service` (oneshot, halt/reboot/shutdown targets) → `/home/openhub/MUSE/stop.sh`
 
-### Additional Notes
-- Ensure that all IP addresses are unique within the 192.168.16.0/24 subnet to avoid conflicts.
-- If any device requires a different IP address, it can be changed to any unused IP within the subnet.
+## Data layout
+`/home/openhub/data/<YYYY_MM_DD_HH_MM_SS>/`
+- `lidar/` PLY frames
+- `camera/` MKV recordings
+- `obd/` `speed.csv`
+- (Radar outputs would be under `radar/` if enabled)
 
+MongoDB (local, default port 27017):
+- `gps.gps` timeseries
+- `RM500U.signal_strength`, `serving_cell`, `temperatures`, `data_counter`, `usbnet_ethernet_status`
+- `iperf.iperf`
+- `traceroute.traceroute`
 
-# Automated Data Collection System
+## Installation / setup
+Run on the device as root:
+```bash
+cd /home/openhub/MUSE
+sudo ./install_services.sh
+sudo systemctl daemon-reload
+sudo systemctl enable muse_startup.service muse_shutdown.service
+# Enable optional per-sensor services if you want them active at boot:
+sudo systemctl enable lidar@ camera@ obd@ gpsd_exporter rm500u_logger iperf_logger traceroute_loggerV4 traceroute_loggerV6
+```
 
-This project is an integrated automated data collection system that primarily runs a Shell script to start and manage multiple sensor data collection processes. The system includes camera, LiDAR, radar, and OBD (On-Board Diagnostics) modules. Data collection for each module is as follows:
+Prereqs:
+- MongoDB running locally.
+- gpsd installed and configured for your GPS receiver.
+- ffmpeg available.
+- iperf3 and traceroute installed.
+- Python venvs present at `/home/openhub/MUSE/.venv` or component venvs (gpsd_exporter has its own). Install `requirements.txt` there:
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  ```
+- LiDAR: build Livox SDK2 targets (`lidar/build/control`, `lidar/build/acquisition`) per `lidar/Readme.md`.
 
-- **Camera**: Captures each frame of the image and integrates it with data from other sensors.
-- **LiDAR**: Transmits point cloud data via UDP protocol. Refer to Livox official documentation and SDK.
-- **Radar**: Transmits data packets via TCP protocol. Refer to K-MD2 radar official documentation.
-- **OBD**: Collects vehicle diagnostic data via Bluetooth connection.
+## Operating services manually
+- Start full stack: `sudo systemctl start muse_startup.service` (or reboot)
+- Stop: `sudo systemctl start muse_shutdown.service` or `sudo systemctl stop lidar@* camera@* obd@* gpsd_exporter rm500u_logger iperf_logger traceroute_loggerV4 traceroute_loggerV6`
+- Check status: `systemctl status <service>`
+- Logs: `journalctl -u <service> -f`
 
-## Usage Instructions
+### Running individual units with custom output paths
+Example LiDAR:
+```bash
+sudo systemctl start lidar@/home/openhub/data/test/lidar
+```
+Camera:
+```bash
+sudo systemctl start camera@/home/openhub/data/test/camera
+```
+OBD (expects `/dev/rfcomm1` already bound):
+```bash
+sudo systemctl start obd@/home/openhub/data/test/obd
+```
 
-### Preparations
+## Data sync / poweroff logic
+In `start.sh`, if Wi‑Fi is connected on `wlp0s20f3`, data is rsynced to `data_store:DATA/` with `--remove-source-files`, empty directories are pruned, then after 120s the device powers off unless user `openhub` is logged in.
 
-Note: All related program code is set up based on `laptop: openhub-Precision-3580`.
+## Bluetooth / OBD pairing
+- Address configured in `start.sh` (`BT_ADDRESS="66:1E:32:30:33:38"`).
+- Bind: `rfcomm bind /dev/rfcomm1 $BT_ADDRESS`
+- Expect scripts in `bluetooth/` can connect/disconnect via `bluetoothctl`.
 
-1. **Ensure the system is Linux-based**
-   - This project has been tested and verified on Ubuntu systems.
+## Database maintenance
+- Initialize collections: `communication/init_db.sh`
+- Clean all collections (destructive): `python3 communication/clean_db.py` (prompts for `yes`)
 
-2. **Install necessary Python packages**
-   - Ensure the Python environment is installed and all required Python libraries are installed.
+## Radar (WIP)
+- Code: `radar/kdm7.py`, `radar/read_radar.py`
+- Services exist (`radar@.service`) but are commented out in `install_services.sh` and `start.sh`. Enable only after completing and testing capture/storage paths.
 
-3. **The computer must support gPTP**
-   - gPTP (General Precision Time Protocol) is used for time synchronization. Refer to the relevant [gPTP 
-     Time Synchronization Guide](https://livox-wiki-cn.readthedocs.io/zh-cn/latest/tutorials/new_product/common/time_sync.html#gptp) for configuration
+## Editing the code remotely
+1. SSH in: `ssh openhub@192.168.0.11`
+2. Edit with your preferred editor (nano/vim) or use `scp`/`rsync` to sync changes.
+3. After edits to services, run `sudo systemctl daemon-reload` and restart affected units.
+4. Code lives in `/home/openhub/MUSE`; data in `/home/openhub/data`.
 
-4. **Set Bluetooth device address and related configuration files**
-   - Configuration file `automotive-master.cfg` is used for gPTP master clock settings.
+## Quick reference commands
+- View running services: `systemctl --type=service | grep -E 'muse|lidar|camera|obd|gpsd_exporter|rm500u|iperf|traceroute|radar'`
+- Tail logs: `journalctl -fu lidar@*`
+- Check MongoDB contents (example): `mongosh --eval 'db.getSiblingDB("gps").gps.countDocuments()'`
 
-### Detailed Setup Steps
-
-#### Master Clock Configuration
-
-Configure gPTP time synchronization. Please refer to the aforementioned gPTP Time Synchronization Guide.
-.
-
-#### LiDAR Setup
-
-1. Download and install [Livox Viewer](https://www.livoxtech.com/downloads) and [Livox-SDK2](https://github.com/Livox-SDK/Livox-SDK2).
-2. Refer to the Livox LiDAR official manual and Livox-SDK2 GitHub for setup and configuration.[Livox wiki](https://livox-wiki-en.readthedocs.io/en/latest/index.html)
-
-#### Radar Setup
-
-Refer to the K-MD2 radar official documentation and Technical Documentation for setup.
-
-For more detailed information, please visit: [K-MD2 Engineering Sample](https://rfbeam.ch/product/k-md2-engineering-sample/).
-
-This page includes the datasheet, control panel software, and the software's user manual.
-Note that the control panel software is only supported on Windows.
-
-Before starting, you need to use the control panel to perform the basic settings of the radar.
-For instance, configuring the radar output items such as RADC, RMRD, etc. Currently, the setup is configured to output only RADC.
-You can also set the detection range and speed of the radar. Refer to the user manual for appropriate adjustments.
-
-
-#### Bluetooth Connection Script Setup
-
-Write and configure scripts for Bluetooth connection to ensure successful connection with the OBD device.
-
-#### Set Script Execution Paths
-
-Ensure all scripts and configuration files have the correct paths.
-
-### Running the Script
-
-1. Navigate to the project directory:
-
-    ```bash
-    cd /path/to/your/project
-    ```
-
-2. Run the following command to start data collection:
-
-    ```bash
-    ./QuickStart.sh start
-    ```
-
-### Stopping the Script
-
-During data collection, you can stop the script by pressing `Ctrl + C`. Stopping the script will automatically terminate all running processes and save the relevant data.
-
-## Module Descriptions
-
-### Camera Module
-
-- **Startup Script**: `camera.py`
-- **Function**: Collects each frame of the image and saves it to the specified directory.
-- **Description**: This module starts the camera and captures images, naming and saving them according to the timestamp for subsequent data processing and analysis.
-
-### LiDAR Module
-
-- **Startup Script**: `livox_lidar_quick_start`
-- **Function**: Transmits point cloud data via UDP protocol, monitored and recorded using tcpdump.
-- **Description**: Once started, this module begins collecting point cloud data and transmits it via the UDP protocol. The tcpdump tool listens to the specified port and records all transmitted data packets, saving them as .pcap files.
-
-### Radar Module
-
-- **Startup Script**: `read_radar.py`
-- **Function**: Transmits data packets via TCP protocol, monitored and recorded using tcpdump.
-- **Description**: Once started, this module begins collecting radar data and transmits it via the TCP protocol. The tcpdump tool listens to the specified port and records all transmitted data packets, saving them as .pcap files.
-
-### OBD Module
-
-- **Startup Script**: `speed_OBD.py`
-- **Function**: Connects to the OBD device via Bluetooth and collects vehicle diagnostic data.
-- **Description**: Once started, this module connects to the OBD device via Bluetooth and begins collecting real-time vehicle diagnostic data. The data is saved as a CSV file for subsequent analysis.
-
+## Requirements file
+`requirements.txt` (pip):
+- obd==0.7.3
+- pymongo==4.15.3
+- pyserial==3.4
+- h5py==3.15.1

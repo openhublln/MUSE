@@ -1,0 +1,13 @@
+[Unit]
+Description=KMD7 Radar RADC capture service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/openhub/MUSE/radar/read_radar.py %I
+Restart=on-failure
+User=openhub
+
+[Install]
+WantedBy=multi-user.target
+
+
