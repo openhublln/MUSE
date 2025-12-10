@@ -50,9 +50,14 @@ class KMD7:
 
     def close(self):
         if self.ser and self.ser.is_open:
-            logger.info("Closing serial port %s", self.port)
+            # Necessary to revert baud to default before closing, because when reopened, the radar expects 115200
+            if self.baud != self.DEFAULT_BAUD:
+                logger.info("Reverting baud to default %d before closing", self.DEFAULT_BAUD)
+                self.send_packet("INIT", struct.pack("B", 0))
+                time.sleep(0.1)
             try:
                 self.ser.close()
+                logger.info("Closing serial port %s", self.port)
             except Exception as e:
                 logger.warning("Exception while closing serial: %s", e)
         self.ser = None
@@ -87,7 +92,7 @@ class KMD7:
 
     def send_packet(self, header: str, payload: bytes = b""):
         """
-        Compose and send a packet: 4 ASCII header + uint32 LE length + payload.
+        Compose and send a packet: 4 ASCII header + uint32 Little Endian length + payload.
         """
         if self.ser is None:
             raise KMD7Exception("Serial port not open")
@@ -102,12 +107,11 @@ class KMD7:
 
     def read_packet(self, expect_timeout: Optional[float] = None) -> Tuple[str, bytes]:
         """
-        Read one packet from the K-MD7: header (4 ASCII), payload length (uint32 LE), payload.
+        Read one packet from the K-MD7: header (4 ASCII), payload length (uint32 Little Endian), payload.
         Returns (header, payload_bytes).
         """
         if self.ser is None:
             raise KMD7Exception("Serial port not open")
-        # temporarily override timeout if provided
         old_timeout = self.ser.timeout
         if expect_timeout is not None:
             self.ser.timeout = expect_timeout
@@ -132,14 +136,14 @@ class KMD7:
     def init(self, baud_setting_code: int = 0):
         """
         Send INIT command to start communication and optionally change baud.
-        baud_setting_code: see datasheet: 0=115200,1=460800,2=921600,...
+        baud_setting_code: see datasheet: 0=115200,1=460800,2=921600,3=2000000,4=3000000
         After INIT is acknowledged with RESP and VERS, the module will change its baud to the chosen setting.
         IMPORTANT: if you pass a non-zero baud_setting_code, you must re-open the serial port at the new baud.
         """
         if not (0 <= baud_setting_code <= 4):
             raise ValueError("baud_setting_code must be 0..4")
+        
         self.send_packet("INIT", struct.pack("B", baud_setting_code))
-        # read RESP
         h, p = self.read_packet()
         if h != "RESP":
             raise KMD7Exception(f"Expected RESP after INIT, got {h}")
@@ -147,7 +151,6 @@ class KMD7:
         if errcode != 0:
             raise KMD7Exception(f"INIT RESP error code: {errcode}")
 
-        # read VERS message
         h, p = self.read_packet()
         if h != "VERS":
             raise KMD7Exception(f"Expected VERS after INIT, got {h}")
@@ -167,35 +170,30 @@ class KMD7:
         return vers
 
     def goodbye(self):
-        self.send_packet("GBYE", b"")
-        h, p = self.read_packet()
-        if h != "RESP":
-            raise KMD7Exception("Expected RESP for GBYE")
-        return p[0] if p else None
-
-    # --------------------
-    # Data read helpers
-    # --------------------
-    def request_tdat_once(self) -> List[dict]:
-        """
-        GNFD with TDAT enabled (bit 3 -> value 8).
-        Returns parsed list of tracked targets (possibly empty).
-        """
-        self.send_packet("GNFD", struct.pack("B", 8))
-        # first should be RESP
-        h, p = self.read_packet()
-        if h != "RESP":
-            raise KMD7Exception(f"Expected RESP after GNFD, got {h}")
-        if p and p[0] != 0:
-            raise KMD7Exception(f"GNFD RESP errored: {p[0]}")
-
-        # read next packet which should be TDAT (or possibly DONE first)
-        h, p = self.read_packet()
-        if h == "TDAT":
-            return self._parse_tdat_payload(p)
-        else:
-            logger.debug("Got %s instead of TDAT (len=%d)", h, len(p))
-            return []
+        """Stop streaming and say goodbye."""
+        for _ in range(3):
+            try:
+                self.ser.reset_input_buffer()
+                self.send_packet("RDOT", struct.pack("B", 0))
+                time.sleep(0.1)
+            except Exception:
+                pass
+            
+        time.sleep(0.2)
+        for i in range(3):
+            try:
+                self.ser.reset_input_buffer()
+                self.send_packet("GBYE", b"")
+                h, p = self.read_packet(expect_timeout=0.5)
+                if h == "RESP":
+                    logger.info("GBYE acknowledged")
+                    return p[0] if p else None
+            except Exception as e:
+                logger.warning("GBYE attempt %d failed: %s", i+1, e)
+                time.sleep(0.2)
+        
+        logger.warning("Could not confirm GBYE response, forcing shutdown.")
+        return None
 
     def enable_streaming(self, enable_mask: int):
         """
@@ -212,8 +210,6 @@ class KMD7:
         logger.info("Streaming enabled (mask=%02x)", enable_mask)
 
     def disable_streaming(self):
-        # send GBYE or send RDOT with mask 0; default approach: RDOT 0
-        self.enable_streaming(0)
         self.stop_streaming = True
 
     def stream_loop(self) -> Iterator[Tuple[str, bytes]]:
@@ -231,8 +227,6 @@ class KMD7:
                     logger.info("Streaming stopped gracefully")
                     break
                 else:
-                    self.disable_streaming(0)
-                    self.close()
                     raise
     
     def save_measurements(self, measurements: list, output_file:str):
@@ -243,9 +237,10 @@ class KMD7:
             tdat_count = 0
             pdat_count = 0
             rfft_count = 0
-            radc_count = 0
+            radc_count = 0  
             
             for data in measurements:
+                target_grp = None
                 if data["type"] == "tdat":
                     target_grp = grp.create_group(f"tdat_{tdat_count}")
                     target_grp.attrs["distance_m"] = data["distance_m"]
@@ -262,19 +257,20 @@ class KMD7:
                     target_grp.attrs["magnitude_db"] = data["magnitude_db"]
                     pdat_count += 1
                 elif data["type"] == "rfft":
-                    rfft_grp = grp.create_group(f"rfft_{rfft_count}")
-                    rfft_grp.create_dataset("spectrum_db", data=np.array(data["spectrum_db"]))
-                    rfft_grp.create_dataset("threshold_db", data=np.array(data["threshold_db"]))
+                    target_grp = grp.create_group(f"rfft_{rfft_count}")
+                    target_grp.create_dataset("spectrum_db", data=np.array(data["spectrum_db"]))
+                    target_grp.create_dataset("threshold_db", data=np.array(data["threshold_db"]))
                     rfft_count += 1
                 elif data["type"] == "radc":
-                    radc_grp = grp.create_group(f"radc_{radc_count}")
-                    radc_grp.create_dataset("if1_freq_a_i", data=np.array(data["if1_freq_a_i"]))
-                    radc_grp.create_dataset("if1_freq_a_q", data=np.array(data["if1_freq_a_q"]))
-                    radc_grp.create_dataset("if2_freq_a_i", data=np.array(data["if2_freq_a_i"]))
-                    radc_grp.create_dataset("if2_freq_a_q", data=np.array(data["if2_freq_a_q"]))
-                    radc_grp.create_dataset("if1_freq_b_i", data=np.array(data["if1_freq_b_i"]))
-                    radc_grp.create_dataset("if1_freq_b_q", data=np.array(data["if1_freq_b_q"]))
+                    target_grp = grp.create_group(f"radc_{radc_count}")
+                    target_grp.create_dataset("if1_freq_a_i", data=np.array(data["if1_freq_a_i"]))
+                    target_grp.create_dataset("if1_freq_a_q", data=np.array(data["if1_freq_a_q"]))
+                    target_grp.create_dataset("if2_freq_a_i", data=np.array(data["if2_freq_a_i"]))
+                    target_grp.create_dataset("if2_freq_a_q", data=np.array(data["if2_freq_a_q"]))
+                    target_grp.create_dataset("if1_freq_b_i", data=np.array(data["if1_freq_b_i"]))
+                    target_grp.create_dataset("if1_freq_b_q", data=np.array(data["if1_freq_b_q"]))
                     radc_count += 1
+                target_grp.attrs["frame_number"] = data["frame_number"]
 
     # --------------------
     # Payload parsers
