@@ -26,7 +26,7 @@ if __name__ == '__main__':
             # not useful, probably not a TPV message
             continue
 
-        print("Inserting data to MongoDB")
+        # print("Inserting data to MongoDB")
         # str time to BSON UTC datetime value
         if 'time' in session.data:
             session.data['time'] = datetime.strptime(session.data['time'], "%Y-%m-%dT%H:%M:%S.%fZ")
