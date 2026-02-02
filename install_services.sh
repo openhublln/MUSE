@@ -22,3 +22,4 @@ cp ./communication/traceroute/traceroute_loggerV6.service /etc/systemd/system/tr
 # startup and poweroff service
 cp ./muse_startup.service /etc/systemd/system/muse_startup.service
 cp ./muse_shutdown.service /etc/systemd/system/muse_shutdown.service
+cp ./sync_data.service /etc/systemd/system/sync_data.service
