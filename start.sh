@@ -7,6 +7,7 @@ OUTPUT_DIR=$DATA_DIR/$TIMESTAMP
 BT_ADDRESS="66:1E:32:30:33:38"
 WIFI_INTERFACE="wlp0s20f3"
 
+sleep 10
 # if connected to wifi network, sync rsync DATA_DIR
 if iw $WIFI_INTERFACE link  | grep Connected; then
     systemctl start sync_data.service
