@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DATA_DIR="/home/openhub/data"
+DATA_DIR="/DATA"
 TIMESTAMP=$(date +%Y_%m_%d_%H_%M_%S)
 OUTPUT_DIR=$DATA_DIR/$TIMESTAMP
 
