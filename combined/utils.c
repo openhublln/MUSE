@@ -1,5 +1,8 @@
 #include "utils.h"
 
+char IMAGE_DIR[256];
+char FRAME_DIR[256];
+
 void delete_folder_jpeg_files(char *path) {
     char command_line[200] = "exec rm -r ";
     strcpy(&command_line[11], path);

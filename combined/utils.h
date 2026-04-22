@@ -15,12 +15,16 @@
 #define SAVE_CAMERA 1
 #define SAVE_RADAR 1
 #define DURATION 2
-
+/*
 #define IMAGE_DIR "/run/media/tfe_stdu/RADAR_CAM/data/jpeg/"
 #define IMAGE_EXT ".jpeg"
 #define FRAME_DIR "/run/media/tfe_stdu/RADAR_CAM/data/raw/"
 #define FRAME_EXT ".raw"
-// "/home/tfe_stdu/Documents/Gauthier/data/raw/"
+*/
+
+extern char IMAGE_DIR[256];
+extern char FRAME_DIR[256];
+
 extern int camera_ready;
 extern int radar_ready;
 
