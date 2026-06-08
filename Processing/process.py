@@ -19,15 +19,14 @@ from radar_processing import compute_rd
 # PATHS
 # ==========================================
 
-data_path = "/DATA_MUSE/"
-folder_path = f"{data_path}/2026_05_20_13_30_38/"
+folder_path = f"./2026_05_20_13_30_38/"
 save_video = True
 
-output_video = f"/linux/grotsartdehe/MUSE/video.mp4"
+output_video = f"./video.mp4"
 dir_raw = Path(f"{folder_path}/radar")
 dir_camera = Path(f"{folder_path}/camera")
-background = np.load(f"/Benson_DATA3/Public/MUSE/background_db.npy")
-background_puissance = np.load(f"/Benson_DATA3/Public/MUSE/background_puissance.npy")
+background = np.load(f"./background_db.npy")
+background_puissance = np.load(f"./background_puissance.npy")
 save_path = Path("/linux/grotsartdehe/MUSE/")
 
 # ==========================================
