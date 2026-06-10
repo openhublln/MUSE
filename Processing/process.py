@@ -27,7 +27,7 @@ dir_raw = Path(f"{folder_path}/radar")
 dir_camera = Path(f"{folder_path}/camera")
 background = np.load(f"./background_db.npy")
 background_puissance = np.load(f"./background_puissance.npy")
-save_path = Path("/linux/grotsartdehe/MUSE/")
+save_path = Path("./MUSE/")
 
 # ==========================================
 # RADAR PARAMETERS - DO NOT MODIFY THIS
