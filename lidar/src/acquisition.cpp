@@ -91,6 +91,21 @@ void PointCloudCallback(uint32_t handle, const uint8_t dev_type, LivoxLidarEther
   point_cloud_callback_arg* arg = (point_cloud_callback_arg*)client_data;
 
   u_int64_t timestamp = *((u_int64_t*)data->timestamp);
+
+  static bool first = true;
+
+  if (first) {
+      first = false;
+
+      printf("Timestamp type : %u\n", data->time_type);
+      printf("Timestamp      : %lu\n", timestamp);
+
+      if (data->time_type == 1)
+          printf(">>> PTP/gPTP synchronization detected <<<\n");
+      else
+          printf(">>> WARNING : NOT using PTP/gPTP <<<\n");
+  }
+  
   if (g_point_buf.first_timestamp == 0) {
     g_point_buf.first_timestamp = timestamp;
     g_point_buf.size = 0;

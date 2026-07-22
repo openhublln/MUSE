@@ -5,8 +5,8 @@ After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/home/openhub/MUSE/start.sh
-TimeoutSec=120
+ExecStart=/home/openhub/MUSE/start_tfe.sh
+TimeoutSec=180
 
 [Install]
 WantedBy=basic.target

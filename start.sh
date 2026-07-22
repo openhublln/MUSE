@@ -11,6 +11,7 @@ sleep 10
 # if connected to wifi network, sync rsync DATA_DIR
 if iw $WIFI_INTERFACE link  | grep Connected; then
     systemctl start sync_data.service
+    exit
 fi
 
 # create new directory with timestamp
