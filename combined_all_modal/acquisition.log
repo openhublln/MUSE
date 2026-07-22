@@ -1,0 +1,599 @@
+[2026-07-20 16:26:06.786] [console] [info] set master/slave sdk to master sdk by default  [parse_cfg_file.cpp] [Parse] [82]
+[2026-07-20 16:26:06.786] [console] [info] Livox lidar logger disable.  [parse_cfg_file.cpp] [Parse] [126]
+[2026-07-20 16:26:06.786] [console] [info] Device type:10 point cloud data and IMU data unicast is enabled.  [params_check.cpp] [CheckLidarMulticastIp] [100]
+[2026-07-20 16:26:06.786] [console] [info] Data Handler Init Succ.  [data_handler.cpp] [Init] [49]
+[2026-07-20 16:26:06.786] [console] [info] Init livox lidars succ.  [device_manager.cpp] [Init] [178]
+[2026-07-20 16:26:06.927] [console] [info]  Receive Command: Id 258 Seq 7879  [hap_command_handler.cpp] [Handle] [67]
+[2026-07-20 16:26:07.787] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:07.788] [console] [info]  Receive Ack: Id 257 Seq 4  [hap_command_handler.cpp] [Handle] [64]
+[2026-07-20 16:26:07.788] [console] [info] Query Fw type succ, the fw_type:1  [general_command_handler.cpp] [QueryFwTypeCallback] [458]
+[2026-07-20 16:26:07.927] [console] [info]  Receive Command: Id 258 Seq 7880  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 2,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:08.788] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:08.789] [console] [info]  Receive Ack: Id 256 Seq 6  [hap_command_handler.cpp] [Handle] [64]
+[2026-07-20 16:26:08.789] [console] [info] Update lidar:1678813376 succ.  [hap_command_handler.cpp] [UpdateLidarCallback] [169]
+LidarInfoChangeCallback Lidar handle: 1678813376 SN: 5CWD22BA4B010H1
+Set lidar to sampling mode
+[2026-07-20 16:26:08.790] [console] [info]  Receive Ack: Id 256 Seq 7  [hap_command_handler.cpp] [Handle] [64]
+WorkModeCallack, status:0, handle:1678813376, ret_code:0, error_key:0[2026-07-20 16:26:08.790] [console] [info]  Receive Ack: Id 256 Seq 8  [hap_command_handler.cpp] [Handle] [64]
+WorkModeCallack, status:0, handle:1678813376, ret_code:32, error_key:32[2026-07-20 16:26:08.790] [console] [info]  Receive Ack: Id 257 Seq 9  [hap_command_handler.cpp] [Handle] [64]
+Host point cloud ip addr:192.168.16.1, host point cloud port:57000, lidar point cloud port:57000.
+Host imu ip addr:192.168.16.1, host imu port:58000, lidar imu port:58000.
+[2026-07-20 16:26:08.927] [console] [info]  Receive Command: Id 258 Seq 7881  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 6,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:09.788] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:09.927] [console] [info]  Receive Command: Id 258 Seq 7882  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 6,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:10.927] [console] [info]  Receive Command: Id 258 Seq 7883  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 6,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:11.789] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:11.928] [console] [info]  Receive Command: Id 258 Seq 7884  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 6,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:12.789] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:12.928] [console] [info]  Receive Command: Id 258 Seq 7885  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 6,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:13.789] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:13.928] [console] [info]  Receive Command: Id 258 Seq 7886  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 6,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:14.789] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:14.928] [console] [info]  Receive Command: Id 258 Seq 7887  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:15.789] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:15.928] [console] [info]  Receive Command: Id 258 Seq 7888  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+Lidar mode set
+[2026-07-20 16:26:16.918] [console] [info] set master/slave sdk to master sdk by default  [parse_cfg_file.cpp] [Parse] [82]
+[2026-07-20 16:26:16.918] [console] [info] Livox lidar logger disable.  [parse_cfg_file.cpp] [Parse] [126]
+[2026-07-20 16:26:16.918] [console] [info] Device type:10 point cloud data and IMU data unicast is enabled.  [params_check.cpp] [CheckLidarMulticastIp] [100]
+[2026-07-20 16:26:16.918] [console] [info] Data Handler Init Succ.  [data_handler.cpp] [Init] [49]
+[2026-07-20 16:26:16.919] [console] [info] Init livox lidars succ.  [device_manager.cpp] [Init] [178]
+Timestamp type : 1
+Timestamp      : 1784557576919144237
+>>> PTP/gPTP synchronization detected <<<
+[2026-07-20 16:26:16.928] [console] [info]  Receive Command: Id 258 Seq 7889  [hap_command_handler.cpp] [Handle] [67]
+[2026-07-20 16:26:17.920] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:17.922] [console] [info]  Receive Ack: Id 257 Seq 4  [hap_command_handler.cpp] [Handle] [64]
+[2026-07-20 16:26:17.922] [console] [info] Query Fw type succ, the fw_type:1  [general_command_handler.cpp] [QueryFwTypeCallback] [458]
+[2026-07-20 16:26:17.928] [console] [info]  Receive Command: Id 258 Seq 7890  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:18.288] [console] [info]  Receive Command: Id 258 Seq 7891  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:18.920] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:18.921] [console] [info]  Receive Ack: Id 256 Seq 6  [hap_command_handler.cpp] [Handle] [64]
+[2026-07-20 16:26:18.921] [console] [info] Update lidar:1678813376 succ.  [hap_command_handler.cpp] [UpdateLidarCallback] [169]
+LidarInfoChangeCallback Lidar handle: 1678813376 SN: 5CWD22BA4B010H1
+[2026-07-20 16:26:18.922] [console] [info]  Receive Ack: Id 256 Seq 7  [hap_command_handler.cpp] [Handle] [64]
+WorkModeCallack, status:0, handle:1678813376, ret_code:0, error_key:0[2026-07-20 16:26:18.922] [console] [info]  Receive Ack: Id 257 Seq 8  [hap_command_handler.cpp] [Handle] [64]
+Host point cloud ip addr:192.168.16.1, host point cloud port:57000, lidar point cloud port:57000.
+Host imu ip addr:192.168.16.1, host imu port:58000, lidar imu port:58000.
+[2026-07-20 16:26:19.288] [console] [info]  Receive Command: Id 258 Seq 7892  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:19.921] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:20.288] [console] [info]  Receive Command: Id 258 Seq 7893  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:20.921] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:21.289] [console] [info]  Receive Command: Id 258 Seq 7894  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:21.921] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:22.289] [console] [info]  Receive Command: Id 258 Seq 7895  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:22.922] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:23.288] [console] [info]  Receive Command: Id 258 Seq 7896  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:23.922] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:24.288] [console] [info]  Receive Command: Id 258 Seq 7897  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:25.289] [console] [info]  Receive Command: Id 258 Seq 7898  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:25.921] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:26.289] [console] [info]  Receive Command: Id 258 Seq 7899  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:26.922] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:27.289] [console] [info]  Receive Command: Id 258 Seq 7900  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:27.921] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:28.289] [console] [info]  Receive Command: Id 258 Seq 7901  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:28.922] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:29.289] [console] [info]  Receive Command: Id 258 Seq 7902  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:29.923] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:30.289] [console] [info]  Receive Command: Id 258 Seq 7903  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:30.922] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:31.289] [console] [info]  Receive Command: Id 258 Seq 7904  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:31.923] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:32.289] [console] [info]  Receive Command: Id 258 Seq 7905  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:32.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:33.289] [console] [info]  Receive Command: Id 258 Seq 7906  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:33.923] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:34.289] [console] [info]  Receive Command: Id 258 Seq 7907  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:34.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:35.289] [console] [info]  Receive Command: Id 258 Seq 7908  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:35.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:36.289] [console] [info]  Receive Command: Id 258 Seq 7909  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:36.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:37.289] [console] [info]  Receive Command: Id 258 Seq 7910  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:37.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:38.289] [console] [info]  Receive Command: Id 258 Seq 7911  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:38.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:39.290] [console] [info]  Receive Command: Id 258 Seq 7912  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:39.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:40.290] [console] [info]  Receive Command: Id 258 Seq 7913  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:40.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:41.290] [console] [info]  Receive Command: Id 258 Seq 7914  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:41.925] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:42.290] [console] [info]  Receive Command: Id 258 Seq 7915  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:42.924] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:43.290] [console] [info]  Receive Command: Id 258 Seq 7916  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:43.925] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:44.290] [console] [info]  Receive Command: Id 258 Seq 7917  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:44.925] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:45.290] [console] [info]  Receive Command: Id 258 Seq 7918  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:45.926] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:46.290] [console] [info]  Receive Command: Id 258 Seq 7919  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:46.926] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+Stopping by signal 15
+Acquisition Ended
+[2026-07-20 16:26:47.948] [console] [info] set master/slave sdk to master sdk by default  [parse_cfg_file.cpp] [Parse] [82]
+[2026-07-20 16:26:47.948] [console] [info] Livox lidar logger disable.  [parse_cfg_file.cpp] [Parse] [126]
+[2026-07-20 16:26:47.948] [console] [info] Device type:10 point cloud data and IMU data unicast is enabled.  [params_check.cpp] [CheckLidarMulticastIp] [100]
+[2026-07-20 16:26:47.948] [console] [info] Data Handler Init Succ.  [data_handler.cpp] [Init] [49]
+[2026-07-20 16:26:47.949] [console] [info] Init livox lidars succ.  [device_manager.cpp] [Init] [178]
+[2026-07-20 16:26:48.290] [console] [info]  Receive Command: Id 258 Seq 7921  [hap_command_handler.cpp] [Handle] [67]
+[2026-07-20 16:26:48.951] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:48.952] [console] [info]  Receive Ack: Id 257 Seq 4  [hap_command_handler.cpp] [Handle] [64]
+[2026-07-20 16:26:48.952] [console] [info] Query Fw type succ, the fw_type:1  [general_command_handler.cpp] [QueryFwTypeCallback] [458]
+[2026-07-20 16:26:49.290] [console] [info]  Receive Command: Id 258 Seq 7922  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 1,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:49.951] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:49.953] [console] [info]  Receive Ack: Id 256 Seq 6  [hap_command_handler.cpp] [Handle] [64]
+[2026-07-20 16:26:49.953] [console] [info] Update lidar:1678813376 succ.  [hap_command_handler.cpp] [UpdateLidarCallback] [169]
+LidarInfoChangeCallback Lidar handle: 1678813376 SN: 5CWD22BA4B010H1
+Set lidar to idle mode
+[2026-07-20 16:26:49.954] [console] [info]  Receive Ack: Id 256 Seq 7  [hap_command_handler.cpp] [Handle] [64]
+WorkModeCallack, status:0, handle:1678813376, ret_code:0, error_key:0[2026-07-20 16:26:49.954] [console] [info]  Receive Ack: Id 256 Seq 8  [hap_command_handler.cpp] [Handle] [64]
+WorkModeCallack, status:0, handle:1678813376, ret_code:32, error_key:32[2026-07-20 16:26:49.954] [console] [info]  Receive Ack: Id 257 Seq 9  [hap_command_handler.cpp] [Handle] [64]
+Host point cloud ip addr:192.168.16.1, host point cloud port:57000, lidar point cloud port:57000.
+Host imu ip addr:192.168.16.1, host imu port:58000, lidar imu port:58000.
+[2026-07-20 16:26:50.290] [console] [info]  Receive Command: Id 258 Seq 7923  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 7,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:50.952] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:51.290] [console] [info]  Receive Command: Id 258 Seq 7924  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 7,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:51.952] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:52.290] [console] [info]  Receive Command: Id 258 Seq 7925  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 7,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:52.952] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:53.290] [console] [info]  Receive Command: Id 258 Seq 7926  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 7,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:53.952] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:54.290] [console] [info]  Receive Command: Id 258 Seq 7927  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 2,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:54.952] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:55.290] [console] [info]  Receive Command: Id 258 Seq 7928  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 2,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:55.952] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:56.290] [console] [info]  Receive Command: Id 258 Seq 7929  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 2,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+[2026-07-20 16:26:56.952] [console] [info] Handle detection data, handle:1678813376, dev_type:10, sn:5CWD22BA4B010H1, cmd_port:56000  [general_command_handler.cpp] [HandleDetectionData] [319]
+[2026-07-20 16:26:57.290] [console] [info]  Receive Command: Id 258 Seq 7930  [hap_command_handler.cpp] [Handle] [67]
+handle: 1678813376, ip: 192.168.16.100, push msg info: 
+{
+    "cur_work_state": 2,
+    "lidar_diag_status": 0,
+    "lidar_flash_status": 0
+}
+Lidar mode set
+Camera dir: /DATA/camera/
+Radar dir : /DATA/radar/
+LiDAR dir : /DATA/lidar/
+
+JPEG files from /DATA/camera/ deleted.
+
+RAW files from /DATA/radar/ deleted.
+
+LiDAR files from /DATA/lidar/ deleted.
+set camera thread core: 0
+set radar  thread core: 0
+write flag : 0
+read  flag : 1
+buffer 0 : flag = 1
+buffer 1 : flag = 1
+buffer 2 : flag = 1
+Connected to code.
+start : 1784557566.785524
+stop  : 1784557566.785863
+clock : 7846.118647
+elapsed time [us] = 339
+start : 1784557566.786025
+stop  : 1784557566.786257
+clock : 7846.119034
+elapsed time [us] = 232
+start : 1784557566.786415
+stop  : 1784557566.786630
+clock : 7846.119439
+elapsed time [us] = 215
+start : 1784557566.786787
+stop  : 1784557566.786961
+clock : 7846.119808
+elapsed time [us] = 174
+=> sent at : 1784557566.786874
+=> clock   : 7846.119808
+=> reference t0 : 1784549720.667066
+=> reference t0 : 1784549720.667066 (corrected)
+=> with param. : iter=3, uslimit=200
+Initial radar: 1784557566.720647 
+Initial camera: 1784557566.787088 
+Initial drift: 66.441 [ms] 
+                      [000] nframes 1
+
+AVAILABLE INPUTS (curr. input ind. : 0)
+Input index : 0
+-name: Camera 1
+-type: 2
+-status: 0
+-capabilities: 0
+
+DEVICE INFORMATION
+-driver : uvcvideo
+-card : UC60 Video: UC60 Video
+-bus_info : usb-0000:00:14.0-2
+-version : 1.0
+-capabilities (flags) : 0x84a00001
+-device_caps (flags): 0x4200001
+
+AVAILABLE FORMATS
+-format 0 : MJPG, 1, Motion-JPEG
+-format 1 : YUYV, 0, YUYV 4:2:2
+
+SETTING FORMAT
+1920x1080 MJPG 30.00fps
+
+DEVICE CROP CAPABILITIES
+-bounds : 1920x1080+0+0
+-default : 1920x1080+0+0
+-aspect : 1/1
+
+REQUESTING BUFFERS
+-number : 2 (asked : 2)
+-type : 1
+-memory type : 1
+                      [001] nframes 4
+[000] nimages 1
+[001] nimages 23
+                      [002] nframes 8
+[002] nimages 30
+                      [003] nframes 7
+[003] nimages 30
+                      [004] nframes 13
+[004] nimages 30
+                      [005] nframes 14
+                      [006] nframes 13
+[005] nimages 30
+[006] nimages 30
+                      [007] nframes 14
+[007] nimages 30
+                      [008] nframes 13
+[008] nimages 30
+                      [009] nframes 14
+                      [010] nframes 13
+[009] nimages 30
+Lidar ready
+Waiting for camera and radar...
+[010] nimages 30
+                      [011] nframes 14
+[011] nimages 30
+                      [012] nframes 14
+[012] nimages 30
+                      [013] nframes 13
+[013] nimages 30
+                      [014] nframes 14
+[014] nimages 30
+                      [015] nframes 13
+[015] nimages 30
+                      [016] nframes 14
+[016] nimages 30
+                      [017] nframes 13
+[017] nimages 30
+                      [018] nframes 14
+                      [019] nframes 13
+[018] nimages 30
+[019] nimages 30
+                      [020] nframes 14
+[020] nimages 30
+                      [021] nframes 14
+[021] nimages 30
+                      [022] nframes 13
+[022] nimages 30
+                      [023] nframes 14
+[023] nimages 30
+                      [024] nframes 13
+[024] nimages 30
+                      [025] nframes 14
+[025] nimages 30
+                      [026] nframes 13
+[026] nimages 30
+                      [027] nframes 14
+[027] nimages 30
+                      [028] nframes 13
+[028] nimages 30
+                      [029] nframes 14
+[029] nimages 30
+                      [030] nframes 13
+[030] nimages 30
+                      [031] nframes 14
+[031] nimages 30
+                      [032] nframes 14
+[032] nimages 30
+                      [033] nframes 13
+[033] nimages 30
+                      [034] nframes 14
+[034] nimages 30
+                      [035] nframes 13
+[035] nimages 30
+                      [036] nframes 14
+[036] nimages 30
+                      [037] nframes 13
+[037] nimages 30
+                      [038] nframes 14
+[038] nimages 30
+                      [039] nframes 14
+[039] nimages 30
+Radar finished
+CSV file closed successfully !
+                      [040] nframes 13
+[040] nimages 30
+Camera finished
+Stopping lidar...

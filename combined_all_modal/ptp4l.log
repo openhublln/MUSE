@@ -1,0 +1,3 @@
+ptp4l[7821.624]: port 1 (enp1s0): INITIALIZING to MASTER on INIT_COMPLETE
+ptp4l[7821.625]: port 0 (/var/run/ptp4l): INITIALIZING to LISTENING on INIT_COMPLETE
+ptp4l[7821.625]: port 0 (/var/run/ptp4lro): INITIALIZING to LISTENING on INIT_COMPLETE
