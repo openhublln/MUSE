@@ -35,10 +35,13 @@
 #include <mutex>
 #include <condition_variable>
 #include <csignal>
+#include <unistd.h>
 
 struct point_cloud_callback_arg {
   uint frequency_hz;
   std::string output_dir;
+  int pipe_fd;
+
 };
 
 struct point_buf {
@@ -104,6 +107,13 @@ void PointCloudCallback(uint32_t handle, const uint8_t dev_type, LivoxLidarEther
           printf(">>> PTP/gPTP synchronization detected <<<\n");
       else
           printf(">>> WARNING : NOT using PTP/gPTP <<<\n");
+
+    char c = 1;
+    if (write(arg->pipe_fd, &c, 1) != 1) {
+        perror("write");
+    }
+
+    close(arg->pipe_fd);
   }
   
   if (g_point_buf.first_timestamp == 0) {
@@ -208,13 +218,22 @@ void LivoxLidarPushMsgCallback(const uint32_t handle, const uint8_t dev_type, co
 }
 
 int main(int argc, const char *argv[]) {
-  if (argc != 4) {
-    fprintf(stderr, "usage: acquisition <config_file_path> <frequency_hz> <output_dir>\n");
+  printf("argc = %d\n", argc);
+
+  for (int i = 0; i < argc; i++)
+  {
+      printf("argv[%d] = '%s'\n", i, argv[i]);
+  }
+  fflush(stdout);
+  
+  if (argc != 5) {
+    fprintf(stderr, "usage: acquisition <config_file_path> <frequency_hz> <output_dir> <pipe_fd>\n");
     return -1;
   }
   const std::string path = argv[1];
   const uint frequency_hz = atoi(argv[2]);
   const std::string output_dir = argv[3];
+  int pipe_fd = atoi(argv[4]);
 
   // REQUIRED, to init Livox SDK2
   if (!LivoxLidarSdkInit(path.c_str())) {
@@ -224,7 +243,7 @@ int main(int argc, const char *argv[]) {
   }
   
 
-  point_cloud_callback_arg arg = {frequency_hz, output_dir};
+  point_cloud_callback_arg arg = {frequency_hz, output_dir,pipe_fd};
 
   // REQUIRED, to get point cloud data via 'PointCloudCallback'
   SetLivoxLidarPointCloudCallBack(PointCloudCallback, &arg);
@@ -250,3 +269,4 @@ int main(int argc, const char *argv[]) {
   printf("Acquisition Ended\n");
   return 0;
 }
+

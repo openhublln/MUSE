@@ -171,6 +171,7 @@ int radar_ready = 0;
 int lidar_ready = 0;
 camera_running = USE_CAMERA ? 1 : 0;
 radar_running  = USE_RADAR  ? 1 : 0;
+int start_recording = 0 ; 
 int count_images = 0;
 int count_frames = 0;
 

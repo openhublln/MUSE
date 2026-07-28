@@ -303,7 +303,7 @@ void *main_camera(void *params) {
     count_images = 0;
     struct v4l2_buffer buffer;
     time_t start_data = time(NULL);
-    while (time(NULL)- start_data < 10 * DURATION) {
+    while (time(NULL)- start_data < 60 * DURATION) {
         /* get buffer from ready queue */
         memset(&buffer, 0, sizeof(buffer));
         buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -320,7 +320,7 @@ void *main_camera(void *params) {
         }
 
         /* save buffer content */
-        if (SAVE_CAMERA)
+        if (SAVE_CAMERA && start_recording)
             save_image(buffer);
 
         /* put buffer in the queue */

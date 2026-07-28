@@ -260,12 +260,16 @@ void *main_radar(void *params) {
         return NULL;
     }
     time_t start_data = time(NULL);
-    while (time(NULL)- start_data < 10 * DURATION) {
+    while (time(NULL)- start_data < 60 * DURATION) {
         send_ready();
         gettimeofday(&last_now, NULL);
         get_msg_from_code(writing_msg);
-        writing_msg->flag = READY;
-        //save_frame(writing_msg);
+        
+        if (start_recording) {
+            writing_msg->flag = READY;
+            //save_frame(writing_msg);
+        }
+
 
         writing_index = get_next_writing_index(writing_index);
         writing_msg = queue[writing_index];

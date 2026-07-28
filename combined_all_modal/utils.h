@@ -20,7 +20,7 @@
 #define SAVE_LIDAR 1
 
 
-#define DURATION 4
+#define DURATION 1
 /*
 #define IMAGE_DIR "/run/media/tfe_stdu/RADAR_CAM/data/jpeg/"
 #define IMAGE_EXT ".jpeg"
@@ -41,6 +41,7 @@ extern int lidar_ready;
 
 extern int camera_running;
 extern int radar_running;
+extern int start_recording;
 
 extern int count_images;
 extern int count_frames;
