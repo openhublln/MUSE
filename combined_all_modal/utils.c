@@ -13,6 +13,17 @@ void delete_folder_jpeg_files(char *path) {
     printf("\nJPEG files from %s deleted.\n", path, command_line);
 }
 
+void print_time(const char *msg)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    printf("[%.3f] %s\n",
+           ts.tv_sec + ts.tv_nsec / 1e9,
+           msg);
+    fflush(stdout);
+}
+
 void delete_folder_raw_files(char *path) {
     char command_line[200] = "exec rm -r ";
     strcpy(&command_line[11], path);
@@ -76,30 +87,40 @@ double mean(double *table, int length) {
 }
 
 int wait_for_camera_and_radar(void) {
-    //printf("Waiting... Camera=%d, radar=%d \n", camera_ready, radar_ready);
-    if (!USE_CAMERA || !USE_RADAR || !USE_LIDAR)
-	printf("CC ?\n \n \n");
-        return 0;
 
-    while ((camera_ready == 0) ||
-        (radar_ready  == 0) ||
-        (lidar_ready  == 0))
+    uint8_t sensors = 0;
+
+    if (USE_CAMERA)
     {
-        usleep(200000);
+        sensors |= SENSOR_CAMERA;
+    }
+
+    if (USE_RADAR)
+    {
+        sensors |= SENSOR_RADAR;
+    }
+
+    if (USE_LIDAR)
+    {
+        sensors |= SENSOR_LIDAR;
+    }
+
+
+    while (1)
+    {
+        if ((!(sensors & SENSOR_CAMERA) || camera_ready) &&
+            (!(sensors & SENSOR_RADAR)  || radar_ready)  &&
+            (!(sensors & SENSOR_LIDAR)  || lidar_ready))
+        {
+            break;
+        }
+
+        usleep(5000);
     }
 
     return 0;
 }
 
-int synchronize_end_acquisition(void)
-{
-    while (camera_running || radar_running)
-    {
-        usleep(200000);
-    }
-
-    return 0;
-}
 
 
 void clock_correction(struct timeval *tv) {
@@ -169,9 +190,8 @@ void compute_NPS_radar(void) {
 int camera_ready = 0;
 int radar_ready = 0;
 int lidar_ready = 0;
-camera_running = USE_CAMERA ? 1 : 0;
-radar_running  = USE_RADAR  ? 1 : 0;
-int start_recording = 0 ; 
+int lidar_control_done = 0;
+int radar_initialisation = 0;
 int count_images = 0;
 int count_frames = 0;
 

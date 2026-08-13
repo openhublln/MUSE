@@ -1,15 +1,32 @@
 #include "lidar.h"
 
-void *wait_lidar_start_recording(void *arg)
+int init_lidar(void)
+{
+    if (system("/home/openhub/MUSE/lidar/build/control "
+               "/home/openhub/MUSE/lidar/config.json start") != 0)
+        return -1;
+
+    print_time("control done");
+
+    lidar_control_done = 1;
+
+    while (USE_RADAR && !radar_initialisation)
+        usleep(5000);
+
+    return 0;
+}
+
+void *wait_lidar_ready(void *arg)
 {
     int fd = *(int *)arg;
     free(arg);
+
     char c;
 
     if (read(fd, &c, 1) == 1)
     {
-        printf("First LiDAR packet received.\n");
-        start_recording = 1;
+        print_time("LiDAR READY received");
+        lidar_ready = 1;
     }
 
     close(fd);
@@ -17,105 +34,82 @@ void *wait_lidar_start_recording(void *arg)
     return NULL;
 }
 
+
 int start_lidar(void)
 {
-    pid_t pid;
-    int pipefd[2];
+    pid_t pid; 
+    /* Le LiDAR est prêt, on attend les autres capteurs */
 
-    if (pipe(pipefd) == -1)
-    {
-        perror("pipe");
-        return -1;
-    }
+    int ready_pipefd[2];
+    int go_pipefd[2];
 
-    /* Put LiDAR into sampling mode */
-    if (system("/home/openhub/MUSE/lidar/build/control "
-               "/home/openhub/MUSE/lidar/config.json start") != 0)
-    {
-        close(pipefd[0]);
-        close(pipefd[1]);
-        return -1;
-    }
-
-    lidar_ready = 1;
-    printf("Lidar ready\n");
-
-    if (wait_for_camera_and_radar() != 0)
-    {
-        close(pipefd[0]);
-        close(pipefd[1]);
-        return -1;
-    }
+    pipe(ready_pipefd);
+    pipe(go_pipefd);
 
     pid = fork();
 
     if (pid < 0)
     {
         perror("fork");
-        close(pipefd[0]);
-        close(pipefd[1]);
         return -1;
     }
 
     /* ---------- Child : lance acquisition ---------- */
     if (pid == 0)
     {
-        /* Le fils n'utilise pas l'extrémité de lecture */
-        close(pipefd[0]);
+        close(ready_pipefd[0]);
+        close(go_pipefd[1]);
 
-        char pipe_fd_str[16];
-        snprintf(pipe_fd_str, sizeof(pipe_fd_str), "%d", pipefd[1]);
+        char ready_fd[16];
+        char go_fd[16];
+
+        snprintf(ready_fd, sizeof(ready_fd), "%d", ready_pipefd[1]);
+        snprintf(go_fd, sizeof(go_fd), "%d", go_pipefd[0]);  
 
         execl(
             "/home/openhub/MUSE/lidar/build/acquisition",
             "acquisition",
             "/home/openhub/MUSE/lidar/config.json",
-            "20",
+            "14",
             LIDAR_DIR,
-            pipe_fd_str,
+            ready_fd,
+            go_fd,
             (char *)NULL);
 
-        /* Si on arrive ici, execl a échoué */
         perror("execl");
-        close(pipefd[1]);
         _exit(EXIT_FAILURE);
     }
 
     /* ---------- Parent ---------- */
-
-    /* Le parent n'écrit jamais dans le pipe */
-    close(pipefd[1]);
+    close(ready_pipefd[1]);
+    close(go_pipefd[0]);
 
     pthread_t wait_thread;
 
     int *fd = malloc(sizeof(int));
-    if (fd == NULL)
-    {
-        perror("malloc");
-        close(pipefd[0]);
-        return -1;
-    }
+    *fd = ready_pipefd[0];
 
-    *fd = pipefd[0];
-
-    if (pthread_create(
-            &wait_thread,
-            NULL,
-            wait_lidar_start_recording,
-            fd) != 0)
-    {
-        perror("pthread_create");
-        close(pipefd[0]);
-        free(fd);
-        return -1;
-    }
+    pthread_create(
+        &wait_thread,
+        NULL,
+        wait_lidar_ready,
+        fd);
 
     pthread_detach(wait_thread);
+
+    if (wait_for_camera_and_radar() != 0)
+        return -1;
+
+    char go = 'G';
+    write(go_pipefd[1], &go, 1);
+    close(go_pipefd[1]);
+    print_time("GO envoyé"); 
 
     lidar_pid = pid;
 
     return 0;
 }
+
 
 int stop_lidar(void)
 {
@@ -141,22 +135,29 @@ int stop_lidar(void)
     return 0;
 }
 
-
 void *main_lidar(void *params)
 {
-    if (!USE_LIDAR)
+    print_time("Lidar thread started");
+    if (!USE_LIDAR){
+        return NULL;
+    }
+
+    if (init_lidar() != 0)
         return NULL;
 
     if (start_lidar() != 0)
         return NULL;
 
+    time_t start = time(NULL);
 
-    printf("Waiting for camera and radar...\n");
-    if (synchronize_end_acquisition() == 0)
+    while (time(NULL) - start < 60 * DURATION)
     {
-        stop_lidar();
-        printf("Stopping lidar...\n");
+        usleep(100000);
     }
+
+    printf("Stopping lidar...\n");
+    stop_lidar();
+    printf("Lidar stopped.\n");
 
     return NULL;
 }

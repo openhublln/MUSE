@@ -276,8 +276,13 @@ void save_image(struct v4l2_buffer buffer) {
 }
 
 void *main_camera(void *params) {
-    if (!USE_CAMERA)
+
+    print_time("thread camera start");
+    if (!USE_CAMERA){
+
         return NULL;
+    }
+        
 
     int _file = open_file();
 
@@ -312,15 +317,22 @@ void *main_camera(void *params) {
         if (xioctl(_file, VIDIOC_DQBUF, &buffer) == -1) {
             perror("Dequeuing buffer");
         }
+        static int first = 1;
+
 
         camera_ready = 1;
         //printf("Camera is ready !\n");
         if (wait_for_camera_and_radar() != 0) {
             return NULL;
         }
+        if (first)
+        {
+            first = 0;
+            print_time("camera is done waiting");
+        }
 
         /* save buffer content */
-        if (SAVE_CAMERA && start_recording)
+        if (SAVE_CAMERA)
             save_image(buffer);
 
         /* put buffer in the queue */
@@ -338,8 +350,6 @@ void *main_camera(void *params) {
     /* unmap and uninitialize buffers */
     uninitialize_buffers(_file);
     printf("Camera finished\n");
-
-    camera_running = 0;
 
     close(_file);
 }

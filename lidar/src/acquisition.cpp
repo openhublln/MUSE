@@ -36,11 +36,24 @@
 #include <condition_variable>
 #include <csignal>
 #include <unistd.h>
+#include <time.h>
+
+void print_time(const char *msg)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    printf("[%.3f] %s\n",
+           ts.tv_sec + ts.tv_nsec / 1e9,
+           msg);
+    fflush(stdout);
+}
 
 struct point_cloud_callback_arg {
   uint frequency_hz;
   std::string output_dir;
-  int pipe_fd;
+  int ready_pipe_fd;
+  int go_pipe_fd;
 
 };
 
@@ -91,6 +104,7 @@ void PointCloudCallback(uint32_t handle, const uint8_t dev_type, LivoxLidarEther
     return;
   }
 
+
   point_cloud_callback_arg* arg = (point_cloud_callback_arg*)client_data;
 
   u_int64_t timestamp = *((u_int64_t*)data->timestamp);
@@ -99,21 +113,35 @@ void PointCloudCallback(uint32_t handle, const uint8_t dev_type, LivoxLidarEther
 
   if (first) {
       first = false;
-
+      print_time("first packet receive");
       printf("Timestamp type : %u\n", data->time_type);
       printf("Timestamp      : %lu\n", timestamp);
 
-      if (data->time_type == 1)
+      if (data->time_type == 1){
           printf(">>> PTP/gPTP synchronization detected <<<\n");
+          }
       else
           printf(">>> WARNING : NOT using PTP/gPTP <<<\n");
 
-    char c = 1;
-    if (write(arg->pipe_fd, &c, 1) != 1) {
-        perror("write");
-    }
+      /* -------- Synchronisation -------- */
+      print_time("Sending READY to parent");
+      char ready = 'R';
+      if (write(arg->ready_pipe_fd, &ready, 1) != 1)
+      {
+          perror("write READY");
+          return;
+      }
+      close(arg->ready_pipe_fd);
 
-    close(arg->pipe_fd);
+      print_time("Waiting GO...");
+      char go;
+      if (read(arg->go_pipe_fd, &go, 1) != 1)
+      {
+          perror("read GO");
+          return;
+      }
+      close(arg->go_pipe_fd);
+      print_time("GO received");
   }
   
   if (g_point_buf.first_timestamp == 0) {
@@ -184,9 +212,18 @@ void QueryInternalInfoCallback(livox_status status, uint32_t handle,
       memcpy(&(host_imu_data_port), &(kv->value[4]), sizeof(uint16_t));
       memcpy(&(lidar_imu_data_port), &(kv->value[6]), sizeof(uint16_t));
     }
+    else if (kv->key == kKeyWorkMode) {
+        uint8_t mode = *(uint8_t*)kv->value;
+        printf("[WORK_MODE] %u\n", mode);
+    }
+    else if (kv->key == kKeyCurWorkState) {
+        uint8_t state = *(uint8_t*)kv->value;
+        printf("[CURRENT_WORK_STATE] %u\n", state);
+    }    
+
     off += sizeof(uint16_t) * 2;
     off += kv->length;
-  }
+    }
 
   printf("Host point cloud ip addr:%u.%u.%u.%u, host point cloud port:%u, lidar point cloud port:%u.\n",
       host_point_ipaddr[0], host_point_ipaddr[1], host_point_ipaddr[2], host_point_ipaddr[3], host_point_port, lidar_point_port);
@@ -212,8 +249,8 @@ void LidarInfoChangeCallback(const uint32_t handle, const LivoxLidarInfo* info, 
 void LivoxLidarPushMsgCallback(const uint32_t handle, const uint8_t dev_type, const char* info, void* client_data) {
   struct in_addr tmp_addr;
   tmp_addr.s_addr = handle;  
-  std::cout << "handle: " << handle << ", ip: " << inet_ntoa(tmp_addr) << ", push msg info: " << std::endl;
-  std::cout << info << std::endl;
+  //std::cout << "handle: " << handle << ", ip: " << inet_ntoa(tmp_addr) << ", push msg info: " << std::endl;
+  //std::cout << info << std::endl;
   return;
 }
 
@@ -226,14 +263,16 @@ int main(int argc, const char *argv[]) {
   }
   fflush(stdout);
   
-  if (argc != 5) {
-    fprintf(stderr, "usage: acquisition <config_file_path> <frequency_hz> <output_dir> <pipe_fd>\n");
+  if (argc != 6) {
+    fprintf(stderr, "usage: acquisition <config_file_path> <frequency_hz> <output_dir> <ready_fd> <go_fd>\n");
     return -1;
   }
   const std::string path = argv[1];
   const uint frequency_hz = atoi(argv[2]);
   const std::string output_dir = argv[3];
-  int pipe_fd = atoi(argv[4]);
+  const int ready_pipe_fd = atoi(argv[4]);
+  const int go_pipe_fd    = atoi(argv[5]);
+
 
   // REQUIRED, to init Livox SDK2
   if (!LivoxLidarSdkInit(path.c_str())) {
@@ -241,9 +280,10 @@ int main(int argc, const char *argv[]) {
     LivoxLidarSdkUninit();
     return -1;
   }
-  
+  print_time("SDK initialized");
 
-  point_cloud_callback_arg arg = {frequency_hz, output_dir,pipe_fd};
+
+  point_cloud_callback_arg arg = {frequency_hz, output_dir,ready_pipe_fd,go_pipe_fd};
 
   // REQUIRED, to get point cloud data via 'PointCloudCallback'
   SetLivoxLidarPointCloudCallBack(PointCloudCallback, &arg);

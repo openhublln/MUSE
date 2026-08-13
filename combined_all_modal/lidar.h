@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <time.h>
 
 #ifndef LIDAR_H
 #define LIDAR_H

@@ -37,12 +37,21 @@ int main(int argc, char *argv[]) {
             delete_folder_lidar_files(LIDAR_DIR);    
     }
 
-    pthread_create(&thread_camera, NULL, main_camera, NULL);
-    pthread_create(&thread_radar, NULL, main_radar, NULL);
     pthread_create(&thread_lidar, NULL, main_lidar, NULL);
+    pthread_create(&thread_radar, NULL, main_radar, NULL);
+
+    /*LIDAR_OK - RADAR_OK  */
+    while ((USE_LIDAR && !lidar_control_done) ||
+        (USE_RADAR && !radar_initialisation))
+    {
+        usleep(1000);
+    }
+    
+    print_time("Initialization done : creating camera thread");
+    pthread_create(&thread_camera, NULL, main_camera, NULL);
 
     /* set thread affinity for cores */
-    cpu_set_t cpusetCamera, cpusetRadar;
+    cpu_set_t cpusetCamera, cpusetRadar, cpusetLidar;
     int res;
 
     CPU_ZERO(&cpusetCamera);
@@ -54,6 +63,14 @@ int main(int argc, char *argv[]) {
     CPU_SET(2, &cpusetRadar);
     printf("set radar  thread core: %d\n",
         pthread_setaffinity_np(thread_radar, sizeof(cpusetRadar), &cpusetRadar));
+
+    /* LiDAR */
+    CPU_ZERO(&cpusetLidar);
+    CPU_SET(2, &cpusetLidar);
+    printf("set lidar thread core: %d\n",
+        pthread_setaffinity_np(thread_lidar,
+                                sizeof(cpusetLidar),
+                                &cpusetLidar));    
 
     pthread_join(thread_camera, NULL);
     pthread_join(thread_radar, NULL);

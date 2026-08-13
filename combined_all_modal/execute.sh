@@ -29,5 +29,5 @@ fi
 # Start acquisition
 
 echo "compiling the script"
-gcc -Wall -o main main.c utils.c camera.c radar.c lidar.c -lpthread && \
+gcc -Wall -o main main.c utils.c camera.c radar.c lidar.c -lpthread && /
 (echo "Executing..." ; ./main /DATA  2>&1 | tee acquisition.log)

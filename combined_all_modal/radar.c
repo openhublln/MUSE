@@ -185,8 +185,7 @@ void *main_save(void *params) {
         } //printf("next reading index : %d\n", reading_index);
         reading_msg = queue[reading_index];
 
-        if (SAVE_RADAR)
-            save_frame(reading_msg);
+        save_frame(reading_msg);
 
         reading_msg->flag = NOT_READY;
         //printf("Message saved from %d.\n", reading_index);
@@ -210,8 +209,12 @@ double timeval_difference(struct timeval *cam, struct timeval *rad){
 struct timeval last_now, radar_t0, cam_t0, cam_tv;
 double drift_t0, drift_t1, drift;
 void *main_radar(void *params) {
-    if (!USE_RADAR)
+
+    print_time("radar thread create");
+    if (!USE_RADAR){
         return NULL;
+    }
+        
 
     MsgFromLoopback msg0, msg1, msg2;
     queue[0] = &msg0;
@@ -239,6 +242,12 @@ void *main_radar(void *params) {
     
     connect_to_code();
     exchange_clocks();
+    radar_initialisation = 1;
+    while (USE_LIDAR && !lidar_control_done)
+    {
+        usleep(5000);
+    }
+    
     
     pthread_t save_thd;
     pthread_create(&save_thd, NULL, main_save, NULL);
@@ -259,16 +268,18 @@ void *main_radar(void *params) {
     if (wait_for_camera_and_radar() != 0) {
         return NULL;
     }
+    print_time("radar done waiting");
+
     time_t start_data = time(NULL);
     while (time(NULL)- start_data < 60 * DURATION) {
         send_ready();
         gettimeofday(&last_now, NULL);
         get_msg_from_code(writing_msg);
         
-        if (start_recording) {
-            writing_msg->flag = READY;
-            //save_frame(writing_msg);
-        }
+
+        writing_msg->flag = READY;
+        //save_frame(writing_msg);
+
 
 
         writing_index = get_next_writing_index(writing_index);
@@ -318,6 +329,5 @@ void *main_radar(void *params) {
     }
     fclose(fp);
     printf("Radar finished\n");
-    radar_running = 0;
     printf("CSV file closed successfully !\n");
 }

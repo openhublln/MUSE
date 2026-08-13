@@ -8,12 +8,18 @@
 #include <stdarg.h>
 #include <sys/time.h>
 #include <fcntl.h>
+#include <stdint.h>
+#include <time.h>
+
 
 #define DELETE_OLD_DATA_FILES 1
 #define USE_CAMERA 1
 #define USE_RADAR 1
 #define USE_LIDAR 1
 
+#define SENSOR_CAMERA  (1 << 0)   
+#define SENSOR_RADAR   (1 << 1)   
+#define SENSOR_LIDAR   (1 << 2)   
 
 #define SAVE_CAMERA 1
 #define SAVE_RADAR 1
@@ -38,10 +44,8 @@ extern char LIDAR_DIR[256];
 extern int camera_ready;
 extern int radar_ready;
 extern int lidar_ready;
-
-extern int camera_running;
-extern int radar_running;
-extern int start_recording;
+extern int lidar_control_done;
+extern int radar_initialisation;
 
 extern int count_images;
 extern int count_frames;
@@ -55,12 +59,12 @@ char *get_filename_d(char *filename, char *root, double timestamp, char *ext);
 char *get_filename_tv(char *filename, char *root, struct timeval tv, char *ext);
 double mean(double *table, int length);
 int wait_for_camera_and_radar(void);
-int synchronize_end_acquisition(void);
 void clock_correction(struct timeval *tv);
 void start(void);
 void stop(void);
 void compute_NPS_camera(void);
 void compute_NPS_radar(void);
 void init_variables(void);
+void print_time(const char *msg);
 
 #endif
